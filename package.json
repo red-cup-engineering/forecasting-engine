@@ -1,6 +1,6 @@
 {
   "name": "@red-cup-engineering/forecasting-engine",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "type": "module",
   "repository": {
     "type": "git",
@@ -114,6 +114,8 @@
     "scripts/",
     "apps/",
     "content/",
+    "data/records/2026-10-16-hourly-index-station-lattice/results/",
+    "data/records/2026-10-10-rain-mid-bin-returns/results/",
     "test/",
     "package.json"
   ],
