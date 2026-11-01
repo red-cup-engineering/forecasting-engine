@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {compareAaaGasParticipation} from '@red-cup-engineering/forecasting/aaa-gas-participation';
+import {compareAaaGasParticipation} from '@red-cup-engineering/forecasting-engine/aaa-gas-participation';
 import {fitBinaryOutcomeFillByDay,scoreBinaryOutcomeFillHoldout}
  from '@red-cup-engineering/mandate-portfolio-allocation-service/binary-fill-calibration';
 

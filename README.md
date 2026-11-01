@@ -1,4 +1,4 @@
-# Forecasting Services Section
+# Forecasting engine
 
 <!-- 561-group-standards:badges:start -->
 [![Red Cup Engineering](https://img.shields.io/badge/561%20Group-Red%20Cup%20Engineering-c0392b)](https://github.com/red-cup-engineering)
@@ -7,7 +7,7 @@
 [![Tips welcome](https://img.shields.io/badge/tips-welcome-d4a017)](https://github.com/561-group/.github/blob/main/TIPS.md)
 <!-- 561-group-standards:badges:end -->
 
-`@red-cup-engineering/forecasting` — a forecasting capability intended for
+`@red-cup-engineering/forecasting-engine` — a forecasting capability intended for
 skill-for-fee work and for the separate Kalshi stake path when calibration
 supports it. This package does not establish a buyer or a profitable stake.
 It provides question ingestion, SignChain claim
@@ -16,10 +16,15 @@ Stakes go through `kalshi-stake-path-service` inside its capped envelope.
 
 ## Present source ownership and extraction boundary (2026-10-14)
 
-This is currently the **mixed legacy implementation** at
-`red-cup-engineering/kalshi-engineering-services-section/services/forecasting-service`;
-its published package identifier is `@red-cup-engineering/forecasting`.
-This is **not** a standalone `red-cup-engineering/forecasting` GitHub repo.
+This is the **mixed legacy implementation**, the repository
+`red-cup-engineering/forecasting-engine` (formerly `red-cup-engineering/forecasting`),
+mounted at `apps/forecasting-engine` of
+`information-forecasting-computer-systems-engineering-services-section`, whose
+domain-neutral core it composes (2026-11-01; formerly mounted at
+`kalshi-engineering-services-section/services/forecasting-service`). Its published
+package is `@red-cup-engineering/forecasting-engine`; `@red-cup-engineering/forecasting`
+0.6.x is its earlier name. The Great Lakes raw URLs under the old repository name
+stopped resolving with the rename.
 The public x402 seller consumes its `./station-observations` and
 `./coops-water-level` exports in two held NOAA candidates. Do not treat
 location under Kalshi as engineering/scientific ownership of NOAA observations.
@@ -54,7 +59,7 @@ permissions or an uncompleted repository migration.
 
 The original Forecasting data producers now support an automatically refreshed, source-qualified **Duluth / western Lake Superior** environmental observation product. Its official sources are NOAA CO-OPS station 9099064 (**IGLD**, metres, UTC, original observation quality and raw NI identity) and NWS METAR **KDLH** (air observations, independent source/issue clocks and raw NI identity). They are *different physical variables*: the publication does not fabricate an interpolated forecast, nautical-safety verdict or weather-index settlement.
 
-**Machine-readable public entrance after received publication:** [latest Great Lakes JSON](https://raw.githubusercontent.com/red-cup-engineering/forecasting/main/data/records/great-lakes-duluth-observations/latest.json); [bounded source-availability history](https://raw.githubusercontent.com/red-cup-engineering/forecasting/main/data/records/great-lakes-duluth-observations/history.jsonl). The source-owned GitHub Actions operation reads current official sources every three hours without purchased input, composes the readings and temporal/vertical references, distinguishes unavailable/stale readings from zero, preserves sample gaps, retains source NI and rights and reports observed source reliability over the last 112 runs. The public raw GitHub URL is an HTTP JSON data entrance but has **no independent API availability guarantee**. Clients must check `generatedAt`, each `observedAt`, `supply`, `sourceCoverage`, `freshness` and source identity before acting; a previous published edition may remain when suppliers are unavailable.
+**Machine-readable public entrance after received publication:** [latest Great Lakes JSON](https://raw.githubusercontent.com/red-cup-engineering/forecasting-engine/main/data/records/great-lakes-duluth-observations/latest.json); [bounded source-availability history](https://raw.githubusercontent.com/red-cup-engineering/forecasting-engine/main/data/records/great-lakes-duluth-observations/history.jsonl). The source-owned GitHub Actions operation reads current official sources every three hours without purchased input, composes the readings and temporal/vertical references, distinguishes unavailable/stale readings from zero, preserves sample gaps, retains source NI and rights and reports observed source reliability over the last 112 runs. The public raw GitHub URL is an HTTP JSON data entrance but has **no independent API availability guarantee**. Clients must check `generatedAt`, each `observedAt`, `supply`, `sourceCoverage`, `freshness` and source identity before acting; a previous published edition may remain when suppliers are unavailable.
 
 This is a **real free evidence and production capability**, not yet a paid sale. Causeway owns any optional licensed transformation, tariff, catalog, x402 paid response and user-facing entitlement through its **existing** original Market; source-code publication or free public usage cannot be booked as outside payment. Supplier compute and GitHub/network resource costs are separately unmetered, not asserted zero.
 
@@ -90,10 +95,10 @@ This is a **real free evidence and production capability**, not yet a paid sale.
 
 ## Exports
 
-- `@red-cup-engineering/forecasting/forecasting` — `src/forecasting.mjs`:
+- `@red-cup-engineering/forecasting-engine/forecasting` — `src/forecasting.mjs`:
   `normalizeQuestion`, `createForecast`, `brierScore`, `logScore`,
   `calibrationBuckets`.
-- `@red-cup-engineering/forecasting/evidence-fusion` — `src/evidence-fusion.mjs`:
+- `@red-cup-engineering/forecasting-engine/evidence-fusion` — `src/evidence-fusion.mjs`:
   `evidenceOfEstimate`, `fuseEvidenceToForecast`.
 
 ## Thread

@@ -15,7 +15,7 @@ import { recordForecast, FORECAST_TYPE, NODE_ROOT } from "../scripts/record-fore
 
 /**
  * Re-exported so an existing consumer importing this app's own path
- * (`@red-cup-engineering/forecasting/forecast-weather-markets-cli`) keeps
+ * (`@red-cup-engineering/forecasting-engine/forecast-weather-markets-cli`) keeps
  * working -- the canonical definitions moved to src/forecasting.mjs
  * (2026-09-05) so scripts/resolve-set-of-forecast-questions.mjs can share
  * them without a script importing this app (import law: scripts import

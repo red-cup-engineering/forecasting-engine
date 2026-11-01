@@ -13,7 +13,7 @@ import {hoistRun,unhoistRun} from '../src/weather-run-hoist.mjs';
 import {migrateWeatherEvidence} from '../src/weather-evidence-migration.mjs';
 import {readRetentionPolicy,retentionWindow,upkeep} from '../src/weather-retention.mjs';
 import policyFile from '../content/config/weather-retention.json' with {type:'json'};
-import {weatherEvidence,weatherStatus,weatherStatusPage,readLatest,scoreWeather,weatherStationSkillPage,weatherStoreGc,maintainStore} from '@red-cup-engineering/forecasting/weather-engine';
+import {weatherEvidence,weatherStatus,weatherStatusPage,readLatest,scoreWeather,weatherStationSkillPage,weatherStoreGc,maintainStore} from '@red-cup-engineering/forecasting-engine/weather-engine';
 
 const sha=text=>createHash('sha256').update(text).digest('hex');
 const json=value=>JSON.parse(JSON.stringify(value));

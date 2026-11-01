@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFile } from 'node:fs/promises';
-import { weatherParticipation, weatherRoot, weatherStrategyResearch,weatherRelationalNowcast, weatherRelationalScience, runWeatherCycle, weatherCadencePlan, runCadencedWeatherCycle, scoreWeather, weatherStoreGc, weatherStatus, allocateLiveWeather, admitWeatherModel } from '@red-cup-engineering/forecasting/weather-engine';
+import { weatherParticipation, weatherRoot, weatherStrategyResearch,weatherRelationalNowcast, weatherRelationalScience, runWeatherCycle, weatherCadencePlan, runCadencedWeatherCycle, scoreWeather, weatherStoreGc, weatherStatus, allocateLiveWeather, admitWeatherModel } from '@red-cup-engineering/forecasting-engine/weather-engine';
 const [command,...args]=process.argv.slice(2);
 const opt=(key,fallback)=>{const i=args.indexOf(`--${key}`);return i<0?fallback:args[i+1];};
 const root=opt('state',weatherRoot());

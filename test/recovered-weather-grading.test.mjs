@@ -4,7 +4,7 @@ import {mkdtemp,writeFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
-import {scoreWeather} from '@red-cup-engineering/forecasting/weather-engine';
+import {scoreWeather} from '@red-cup-engineering/forecasting-engine/weather-engine';
 test('recovered hourly weather capability keeps unverified and post-settlement rows out of confidence',async()=>{
  const root=await mkdtemp(join(tmpdir(),'weather-grading-'));
  try{

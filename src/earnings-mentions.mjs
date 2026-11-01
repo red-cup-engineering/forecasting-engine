@@ -4,7 +4,7 @@
  * Knowledge before the event: every feature of a market uses only calls that started strictly earlier.
  */
 
-import { orderFee } from '@red-cup-engineering/forecasting/fees';
+import { orderFee } from '@red-cup-engineering/forecasting-engine/fees';
 export const isEarningsSeries = (t) => /^(KXEARNINGSMENTION|KXMENTIONEARN)/u.test(t);
 
 export const normWord = (w) => String(w ?? '').toLowerCase().replace(/\s+/gu, ' ').trim();
