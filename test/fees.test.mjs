@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { BALANCE_GRID_CENTS, orderFeeCents, orderFeeCentsOfFills, orderFee } from '@red-cup-engineering/forecasting/fees';
+import { BALANCE_GRID_CENTS, orderFeeCents, orderFeeCentsOfFills, orderFee } from '@red-cup-engineering/forecasting-engine/fees';
 import { netPerContract } from '../src/hypotheses/stats.mjs';
 import { fee as categoryShadowFee } from '../src/category-shadows/common.mjs';
 

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtempSync,readFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {publishWeatherIndexSources} from '@red-cup-engineering/forecasting/weather-engine';
+import {publishWeatherIndexSources} from '@red-cup-engineering/forecasting-engine/weather-engine';
 import {INDEX_CITIES} from '../src/weather-index.mjs';
 
 const collector=async()=>({cities:{},errors:[]});

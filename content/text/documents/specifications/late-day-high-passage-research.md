@@ -325,7 +325,7 @@ station/date now return an explicit conflict carrying both candidates,
 not first-match-wins. Older archives that lack per-fetch clocks can use
 the (later, conservative) cycle retrievedAt, never backdate to the
 observation's physical timestamp. The published
-@red-cup-engineering/forecasting/weather-settlement-source export makes
+@red-cup-engineering/forecasting-engine/weather-settlement-source export makes
 the receipt-bearing source reader available to other consumers, instead
 of each reimplementing its own parser.
 

@@ -1,11 +1,11 @@
 /**
  * Kalshi forecasting naming over the domain-neutral prediction engineering core. The records, scoring rules and calibration curve live in
- * @red-cup-engineering/prediction-engineering-services-section and are re-exported unchanged; only the ticker and series naming of this venue is here.
+ * @red-cup-engineering/information-forecasting-computer-systems-engineering-services-section and are re-exported unchanged; only the ticker and series naming of this venue is here.
  */
 
 import { slugify } from "@red-cup-engineering/computer-text-content-engineering-services-section/slugify-text";
 
-export { normalizeQuestion, createForecast, brierScore, logScore, calibrationBuckets } from "@red-cup-engineering/prediction-engineering-services-section/forecast";
+export { normalizeQuestion, createForecast, brierScore, logScore, calibrationBuckets } from "@red-cup-engineering/information-forecasting-computer-systems-engineering-services-section/forecast";
 
 /**
  * Normalizes a Kalshi bracket ticker (e.g. "KXHIGHNY-26SEP05-B85.5") into

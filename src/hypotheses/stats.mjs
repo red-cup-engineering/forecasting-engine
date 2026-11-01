@@ -1,5 +1,5 @@
 import { jackknife } from '../forward-shadow.mjs';
-import { orderFee, feePerContract } from '@red-cup-engineering/forecasting/fees';
+import { orderFee, feePerContract } from '@red-cup-engineering/forecasting-engine/fees';
 
 /**
  * Net P&L per contract of one entry: payoff - price - fee. The fee model is the hypothesis's own, as registered:

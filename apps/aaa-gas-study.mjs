@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-import {compareAaaGasParticipation} from '@red-cup-engineering/forecasting/aaa-gas-participation';
+import {compareAaaGasParticipation} from '@red-cup-engineering/forecasting-engine/aaa-gas-participation';
 import {replayFuelMakerFillSelection} from '../src/fuel-maker-fill-retrospective.mjs';
 
 const [mode,path,...other]=process.argv.slice(2);
