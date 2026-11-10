@@ -452,3 +452,13 @@ test('retention: the cycle measures growth from the bytes the packs gained since
   const quick=await run({at:new Date(now-1000).toISOString(),bytesAfter:0,growthBytesPerDay:5},1e12);
   assert.equal(quick.growthBytesPerDay,5,'a second is too little time to measure a rate; the earlier estimate stands');
 });
+
+
+test('a retained dated source remains readable independently of the wall clock', async t => {
+  const root = await scratch(t);
+  const record = source(Date.parse('2001-01-01T00:00:00Z'));
+  const stored = await putEvidence(root, record, {source: true});
+  assert.deepEqual((await readEvidenceRecord({root, evidenceId: stored.id})).record, record);
+  await evidenceStore(root).deleteRef(stored.ref);
+  await assert.rejects(() => readEvidenceRecord({root, evidenceId: stored.id}), {code: 'ENOENT'});
+});

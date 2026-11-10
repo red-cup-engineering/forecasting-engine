@@ -76,6 +76,7 @@ import {hoistRun,unhoistRun} from './weather-run-hoist.mjs';
 import {gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import {join} from 'node:path';
+import {readdir} from 'node:fs/promises';
 import {createContentTreeStore,contentTreeLink} from '@red-cup-engineering/computer-file-engineering-services-section/content-tree-store';
 import {scienceStateAt,stationScienceReport,stationPointForecasts} from './station-weather-science.mjs';
 import {jsonDigest,readTree,saveTree} from './weather-state-tree.mjs';
@@ -163,12 +164,21 @@ export async function putEvidenceAlias(root,{from,address}){
   await evidenceStore(root).setRef('alias/'+from,address);
 }
 
-/** Address of a raw source by its dated ref: the date it came with, else the retention window back from today. */
-async function sourceAddress(root,id,dateHint){
-  const store=evidenceStore(root);
-  if(dateHint)return store.getRef(sourceRefName(dateHint,id));
-  const days=sourceRetentionDays()+2,today=Date.now();
-  for(let back=0;back<=days;back++){const address=await store.getRef(sourceRefName(dateOf(today-back*DAY),id));if(address)return address;}
+/** Resolve a source through the dated refs still retained by the store. */
+async function sourceAddress(root, id, dateHint) {
+  const store = evidenceStore(root);
+  if (dateHint) return store.getRef(sourceRefName(dateHint, id));
+  let dates;
+  try {
+    dates = await readdir(join(root, 'content-tree', 'refs', 'sources'), {withFileTypes: true});
+  } catch (error) {
+    if (error.code === 'ENOENT') return null;
+    throw error;
+  }
+  for (const date of dates.filter(entry => entry.isDirectory() && /^\d{4}-\d{2}-\d{2}$/u.test(entry.name))) {
+    const address = await store.getRef(sourceRefName(date.name, id));
+    if (address) return address;
+  }
   return null;
 }
 async function readStored(root,id,dateHint){
