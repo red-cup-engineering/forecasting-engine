@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { StoreError, get, put } from "@red-cup-engineering/semiotic-eavt-services-section/store";
+import { StoreError, get, put } from "@red-cup-engineering/semiotic-eavt-engineering-services-section/store";
 import { brierScore, logScore } from "../src/forecasting.mjs";
 import { FORECAST_TYPE, NODE_ROOT } from "./record-forecast.mjs";
 import { resolve } from "node:path";

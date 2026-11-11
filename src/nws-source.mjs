@@ -1,7 +1,7 @@
 /** NWS source projection over the shared HTTP GET acquisition owner. The
  * original deadline continues through the existing bounded JSON body read. */
-import {acquireHttpResponse as readNwsResponse} from '@red-cup-engineering/http-services-section/acquire-response';
-import {readBody} from '@red-cup-engineering/http-services-section/body/web';
+import {acquireHttpResponse as readNwsResponse} from '@red-cup-engineering/http-engineering-services-section/acquire-response';
+import {readBody} from '@red-cup-engineering/http-engineering-services-section/body/web';
 import {JSON_RESOURCE_ENVELOPE} from '@red-cup-engineering/json-services-section/canonical-json';
 export {readNwsResponse};
 export async function readNwsJson(url,options={}) {

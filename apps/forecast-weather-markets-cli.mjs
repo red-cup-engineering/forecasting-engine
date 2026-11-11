@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { observeSetOfKalshiWeatherMarkets } from "@red-cup-engineering/kalshi-services-section/observe-set-of-kalshi-weather-markets";
 import { deriveSetOfNwsTemperatureForecasts } from "@red-cup-engineering/kalshi-services-section/derive-set-of-nws-temperature-forecasts";
 import { sizePosition } from "@red-cup-engineering/position-sizing-service/size-position";
-import { each, put } from "@red-cup-engineering/semiotic-eavt-services-section/store";
+import { each, put } from "@red-cup-engineering/semiotic-eavt-engineering-services-section/store";
 import { runMain } from "@red-cup-engineering/javascript-file-services-section/javascript-file-main-guard";
 import { resolve } from "node:path";
 import { normalizeQuestion, createForecast, brierScore, logScore, questionIdFromTicker, referenceClassFromSeries, DATA_ROOT_ENV_VAR } from "../src/forecasting.mjs";

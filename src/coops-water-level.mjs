@@ -9,7 +9,7 @@
  * Reference: https://api.tidesandcurrents.noaa.gov/api/prod/
  * Source rights: https://oceanservice.noaa.gov/disclaimer.html
  */
-import { readBody } from "@red-cup-engineering/http-services-section/body/web";
+import { readBody } from "@red-cup-engineering/http-engineering-services-section/body/web";
 import { makeNiUri } from "@red-cup-engineering/uri-services-section/ni-uri";
 import { admitCanonicalJson, JSON_RESOURCE_ENVELOPE } from "@red-cup-engineering/json-services-section/canonical-json";
 

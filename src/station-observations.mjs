@@ -21,7 +21,7 @@ import {readNwsResponse,readNwsJson} from './nws-source.mjs';
 import {createHash} from 'node:crypto';
 import {gzipSync} from 'node:zlib';
 import {precipitationWitnesses} from './weather-precipitation.mjs';
-import { readBody } from '@red-cup-engineering/http-services-section/body/web';
+import { readBody } from '@red-cup-engineering/http-engineering-services-section/body/web';
 import { makeNiUri } from '@red-cup-engineering/uri-services-section/ni-uri';
 import { admitCanonicalJson, JSON_RESOURCE_ENVELOPE } from '@red-cup-engineering/json-services-section/canonical-json';
 

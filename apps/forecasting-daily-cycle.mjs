@@ -6,7 +6,7 @@
 // see the exported function's JSDoc for the full contract.
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { each, put } from "@red-cup-engineering/semiotic-eavt-services-section/store";
+import { each, put } from "@red-cup-engineering/semiotic-eavt-engineering-services-section/store";
 import { resolve } from "node:path";
 import { runMain } from "@red-cup-engineering/javascript-file-services-section/javascript-file-main-guard";
 import { resolveSetOfForecastQuestions } from "../scripts/resolve-set-of-forecast-questions.mjs";

@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { each } from "@red-cup-engineering/semiotic-eavt-services-section/store";
+import { each } from "@red-cup-engineering/semiotic-eavt-engineering-services-section/store";
 import { createForecast } from "../src/forecasting.mjs";
 import { recordForecast } from "../scripts/record-forecast.mjs";
 import { CALIBRATION_TYPE, findRecordedForecast, scoreForecast } from "../scripts/score-forecast.mjs";

@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { put } from "@red-cup-engineering/semiotic-eavt-services-section/store";
+import { put } from "@red-cup-engineering/semiotic-eavt-engineering-services-section/store";
 
 /** This package's own root, the default store custody root (records land at data/records/, per house data-custody law). */
 export const NODE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
