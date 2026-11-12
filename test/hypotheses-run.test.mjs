@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { sidesOfReading } from '@red-cup-engineering/computer-data-engineering-services-section/four';
+import { sidesOfReading } from '@red-cup-engineering/metrologic/four';
 import { createFetcher, BudgetExhausted } from '../src/hypotheses/fetcher.mjs';
 import { readStatuses, runHypotheses, hypothesesDir } from '../src/hypotheses/run.mjs';
 import { admittedHypothesisModels, hypothesisSurface } from '../src/hypotheses/admit.mjs';

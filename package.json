@@ -87,6 +87,8 @@
     "test": "node --test --test-global-setup=node_modules/@red-cup-engineering/computer-file-engineering-services-section/src/test-scratch.mjs test/*.test.mjs"
   },
   "dependencies": {
+    "@red-cup-engineering/exact-number-data-service": "^0.2.3",
+    "@red-cup-engineering/metrologic": "^0.22.1",
     "@red-cup-engineering/information-forecasting-computer-systems-engineering-services-section": "0.3.0",
     "@red-cup-engineering/uri-services-section": "0.1.1",
     "@red-cup-engineering/json-services-section": "0.4.0",

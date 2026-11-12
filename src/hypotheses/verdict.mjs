@@ -12,7 +12,7 @@
  * Status follows from the reading: only-supported -> passed, only-refuted -> killed, otherwise unchanged.
  * `admitted` is the desk owner's act and is never set here.
  */
-import { readingOfSides, sidesOfReading } from '@red-cup-engineering/computer-data-engineering-services-section/four';
+import { readingOfSides, sidesOfReading } from '@red-cup-engineering/metrologic/four';
 import { armDifference, clusterStats } from './stats.mjs';
 
 const monthOf = (date) => String(date).slice(0, 7);

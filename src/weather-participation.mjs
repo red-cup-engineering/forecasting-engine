@@ -3,7 +3,7 @@
 import {initialPosition,extend,moveOfFrame,marketAt,queueAhead,walkTake,shadowRest,ONE} from '@red-cup-engineering/kalshi-services-section/arena';
 import {participationFeeTerms as feeTerms} from './weather-capital.mjs';
 import {fragmentedWeatherFeeReserve as feeReserve,weatherFillSelectionBounds} from './weather-capital.mjs';
-import {gradedFromParts,gradedToDecimalString} from '@red-cup-engineering/computer-data-engineering-services-section/number/graded';
+import {gradedFromParts,gradedToDecimalString} from '@red-cup-engineering/exact-number-data-service/graded';
 const number=g=>{const [n,d='1']=gradedToDecimalString(g).split('/'),v=Number(n)/Number(d);if(!Number.isFinite(v))throw new RangeError('finite monetary projection required');return v;};
 const clock=x=>Date.parse(x);
 const fixed=(x,n)=>{const y=Number(x)*n;if(!Number.isSafeInteger(Math.round(y))||Math.abs(y-Math.round(y))>1e-6)throw new RangeError('unsupported fixed-point trade');return Math.round(y);};

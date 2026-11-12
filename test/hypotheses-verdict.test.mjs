@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sidesOfReading } from '@red-cup-engineering/computer-data-engineering-services-section/four';
+import { sidesOfReading } from '@red-cup-engineering/metrologic/four';
 import { clusterStats } from '../src/hypotheses/stats.mjs';
 import { nextStatus, readVerdict } from '../src/hypotheses/verdict.mjs';
 
