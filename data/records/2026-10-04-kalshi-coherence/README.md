@@ -10,7 +10,7 @@ fee- and depth-aware portfolio. LP solver: `src/simplex.mjs` (own dense two-phas
 1. interval-ladder: brackets of one event partition the line, ">= X" prices monotone (cell containment). Subjects are
    split by ticker so per-team spreads / player props do not collide.
 2. exclusive-set: mutually exclusive non-numeric event (+ "none" cell); two/three-sided sports games assumed exhaustive (void/tie risk).
-3. station-day: KXHIGH x KXLOWT of one CLI station-day on the joint (high, low) space, high >= low; Polymarket US high brackets join (`src/coherence-polymarket.mjs`, reuses polymarket-services-section matching).
+3. station-day: KXHIGH x KXLOWT of one CLI station-day on the joint (high, low) space, high >= low; Polymarket US high brackets join (`src/coherence-polymarket.mjs`, reuses polymarket-engineering-services-section matching).
 4. window-union: "rain any day in window" (KXRAINWKND) = OR of KXRAIN daily markets, parsed from rule text.
 Dormant for lack of coverage (only 1-2 of 7 days listed): weekly KXAVGT / KXWEEKHT vs daily; monthly vs weekly rain overlaps partially.
 

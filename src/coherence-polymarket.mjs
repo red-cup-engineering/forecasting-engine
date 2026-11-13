@@ -1,12 +1,12 @@
 /**
  * Cross-venue legs: Polymarket US daily-high brackets for the stations both venues list,
- * matched to Kalshi's by the polymarket-services-section logger's own matching
+ * matched to Kalshi's by the polymarket-engineering-services-section logger's own matching
  * (CITIES, eventSlug, polymarketBracket). Public gateway only; no credential, no order.
  * First-pass quotes come from the event's best bid/ask with a provisional size (1000);
  * `polymarketDepth` reads the real book for the legs of a violation.
  */
-import { CITIES, eventSlug, polymarketBracket, PM_TAKER } from '../../../../polymarket-services-section/src/cross-weather.mjs';
-import { createPolymarketUsClient } from '../../../../polymarket-services-section/src/us-client.mjs';
+import { CITIES, eventSlug, polymarketBracket, PM_TAKER } from '../../../../polymarket-engineering-services-section/src/cross-weather.mjs';
+import { createPolymarketUsClient } from '../../../../polymarket-engineering-services-section/src/us-client.mjs';
 
 const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const kalshiDateToken = (iso) => `-${iso.slice(2, 4)}${MON[Number(iso.slice(5, 7)) - 1]}${iso.slice(8, 10)}`;
