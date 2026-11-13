@@ -4,7 +4,7 @@ index 30640d0..17dbd5f 100644
 +++ b/apps/group-operations/src/weather-network.mjs
 @@ -1,22 +1,42 @@
  import { createMcpClient, mcpInProcessTransport } from '@red-cup-engineering/mcp-engineering-services-section/client';
--import { weatherEcmwfEvidence, weatherRoot, allocateLiveWeather, weatherEvidence, weatherIndexEvidence, weatherStationEvidence, weatherStationSkill, weatherStatus, triggerWeatherCycle, scoreWeather, admitWeatherModel } from '@red-cup-engineering/kalshi-services-section/weather-engine';
+-import { weatherEcmwfEvidence, weatherRoot, allocateLiveWeather, weatherEvidence, weatherIndexEvidence, weatherStationEvidence, weatherStationSkill, weatherStatus, triggerWeatherCycle, scoreWeather, admitWeatherModel } from '@red-cup-engineering/kalshi-engineering-services-section/weather-engine';
 +import {realpath,readFile} from 'node:fs/promises';
 +import {join,resolve,relative,isAbsolute} from 'node:path';
 +import {homedir} from 'node:os';
@@ -14,7 +14,7 @@ index 30640d0..17dbd5f 100644
 + const pointer=environment.KALSHI_WEATHER_RUNTIME_DIR??join(environment.HOME??homedir(),'.local/share/561-group/weather-research/current');
 + let runtime;
 + try {runtime=await realpath(pointer);} catch(e) {
-+  if(e.code==='ENOENT'&&!environment.KALSHI_WEATHER_RUNTIME_DIR)return import('@red-cup-engineering/kalshi-services-section/weather-engine');
++  if(e.code==='ENOENT'&&!environment.KALSHI_WEATHER_RUNTIME_DIR)return import('@red-cup-engineering/kalshi-engineering-services-section/weather-engine');
 +  throw e;
 + }
 + const manifest=JSON.parse(await readFile(join(runtime,'manifest.json'),'utf8'));

@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
-import { makeNiUri } from "@red-cup-engineering/uri-services-section/ni-uri";
+import { makeNiUri } from "@red-cup-engineering/uri-engineering-services-section/ni-uri";
 
 /** One byte-exact read shared by the new bounded views, never a new store. */
 export async function readWeatherSourceRecord({ root, file, label = file, emptyRecord = {}, sourceRevision } = {}) {

@@ -8,7 +8,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { each, put } from "@red-cup-engineering/semiotic-eavt-engineering-services-section/store";
 import { resolve } from "node:path";
-import { runMain } from "@red-cup-engineering/javascript-file-services-section/javascript-file-main-guard";
+import { runMain } from "@red-cup-engineering/javascript-file-engineering-services-section/javascript-file-main-guard";
 import { resolveSetOfForecastQuestions } from "../scripts/resolve-set-of-forecast-questions.mjs";
 import { scoreForecast, CALIBRATION_TYPE } from "../scripts/score-forecast.mjs";
 import { deriveCalibrationRecord } from "../scripts/derive-calibration-record.mjs";

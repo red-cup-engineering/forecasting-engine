@@ -22,8 +22,8 @@ import {createHash} from 'node:crypto';
 import {gzipSync} from 'node:zlib';
 import {precipitationWitnesses} from './weather-precipitation.mjs';
 import { readBody } from '@red-cup-engineering/http-engineering-services-section/body/web';
-import { makeNiUri } from '@red-cup-engineering/uri-services-section/ni-uri';
-import { admitCanonicalJson, JSON_RESOURCE_ENVELOPE } from '@red-cup-engineering/json-services-section/canonical-json';
+import { makeNiUri } from '@red-cup-engineering/uri-engineering-services-section/ni-uri';
+import { admitCanonicalJson, JSON_RESOURCE_ENVELOPE } from '@red-cup-engineering/json-engineering-services-section/canonical-json';
 
 export const NWS_API = 'https://api.weather.gov';
 export const NWS_USER_AGENT = '(561 Group weather desk, ops@561.group)';

@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {gzipSync} from 'node:zlib';
-import {makeNiUri} from '@red-cup-engineering/uri-services-section/ni-uri';
+import {makeNiUri} from '@red-cup-engineering/uri-engineering-services-section/ni-uri';
 import {openTree,readTree,saveTree,releaseTree,importLegacyFile,jsonDigest} from '../src/weather-state-tree.mjs';
 import {updateStationScience,readStationScience,readStationSciencePage,readScienceState,scienceStateAt,stationScienceReport} from '../src/station-weather-science.mjs';
 import {sealDerivedRecord,putEvidence,indexDerived,ageDerived,ageDerivedRecord,putEvidenceAlias,readEvidenceRecord,loadWeatherEvidence,evidenceStore,expireSources,sourceRetentionDays,sourceRefName,niOfHex,hexOfNi,DERIVED_KIND,isUsedForecast} from '../src/weather-evidence-record.mjs';

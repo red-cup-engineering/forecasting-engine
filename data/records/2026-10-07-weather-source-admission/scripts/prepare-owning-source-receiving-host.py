@@ -2,7 +2,7 @@ from pathlib import Path
 import tarfile,json,uuid,os
 home=Path.home();house=(home/'.local/share/561-group/releases/cold-red-gate.561.group/current').resolve();candidate=Path('/tmp')/('weather-owning-source-'+uuid.uuid4().hex);candidate.mkdir(mode=0o700)
 with tarfile.open('/tmp/weather-owning-source-candidate.tar.gz') as tar:tar.extractall(candidate,filter='data')
-owners={'@red-cup-engineering/kalshi-services-section':candidate/'kalshi','@red-cup-engineering/forecasting':candidate/'kalshi/services/forecasting-service','@561-group/group-operations':candidate/'operations/apps/group-operations'}
+owners={'@red-cup-engineering/kalshi-engineering-services-section':candidate/'kalshi','@red-cup-engineering/forecasting':candidate/'kalshi/services/forecasting-service','@561-group/group-operations':candidate/'operations/apps/group-operations'}
 for name,new in owners.items():
  old=(house/'node_modules'/name).resolve(strict=True);modules=new/'node_modules';modules.mkdir(exist_ok=True)
  for scope in old.parent.parent.iterdir():

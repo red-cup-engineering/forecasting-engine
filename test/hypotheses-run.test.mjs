@@ -8,7 +8,7 @@ import { createFetcher, BudgetExhausted } from '../src/hypotheses/fetcher.mjs';
 import { readStatuses, runHypotheses, hypothesesDir } from '../src/hypotheses/run.mjs';
 import { admittedHypothesisModels, hypothesisSurface } from '../src/hypotheses/admit.mjs';
 import { FEED, hypothesisDirectory, modelDirectory, openStore } from '../src/hypotheses/store.mjs';
-import { feedRows } from '@red-cup-engineering/kalshi-services-section/seavt-log';
+import { feedRows } from '@red-cup-engineering/kalshi-engineering-services-section/seavt-log';
 
 const NOW = Date.parse('2027-02-01T00:00:00Z');
 const WEEKS = 14; // settled weekly events after registration

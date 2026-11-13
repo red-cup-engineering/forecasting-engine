@@ -10,7 +10,7 @@ import { mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { runJavascriptNodeOperation } from '@red-cup-engineering/javascript-node-services-section/operation';
+import { runJavascriptNodeOperation } from '@red-cup-engineering/javascript-node-engineering-services-section/operation';
 import { HOUSE_MODEL_HOOKS, KALSHI_API, baseRateFamily, buildKalshiMarketBrief, estimateHouseView, validateKalshiMarketBrief } from '../src/kalshi-market-brief.mjs';
 
 /** This package's own root: briefs land under data/records/kalshi-market-briefs/. */

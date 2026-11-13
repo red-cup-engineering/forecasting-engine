@@ -8,7 +8,7 @@ import {promisify} from 'node:util';
 import {cell,address} from '@red-cup-engineering/signcell/cell';
 import {acquireHttpResponse} from '@red-cup-engineering/http-engineering-services-section/acquire-response';
 import {readBody} from '@red-cup-engineering/http-engineering-services-section/body/web';
-import {JSON_RESOURCE_ENVELOPE} from '@red-cup-engineering/json-services-section/canonical-json';
+import {JSON_RESOURCE_ENVELOPE} from '@red-cup-engineering/json-engineering-services-section/canonical-json';
 /** Forecast and verify the published city index using its actual versioned configuration. */
 import {makeTemperaturePool,postprocessTemperature,temperatureCdf} from './weather-ensemble.mjs';
 export const INDEX_CITIES={

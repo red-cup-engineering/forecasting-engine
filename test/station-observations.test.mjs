@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { admitCanonicalJson, JSON_RESOURCE_ENVELOPE } from '@red-cup-engineering/json-services-section/canonical-json';
-import { verifyNiUri } from '@red-cup-engineering/uri-services-section/ni-uri';
+import { admitCanonicalJson, JSON_RESOURCE_ENVELOPE } from '@red-cup-engineering/json-engineering-services-section/canonical-json';
+import { verifyNiUri } from '@red-cup-engineering/uri-engineering-services-section/ni-uri';
 import { parseMetar, latestMetar, readNwsMetarSnapshot, admitNwsMetarSnapshot, asosWholeCelsiusPreimage, wholeCelsiusTemperatureInterval, preciseBounds, withMetar, METAR_FEED } from '../src/station-observations.mjs';
 
 const report = 'KBOS 131710Z 12005KT 7SM OVC008 13/12 A3002 RMK AO2 CIG 005V012 T01330122';

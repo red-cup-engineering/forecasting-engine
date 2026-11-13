@@ -24,7 +24,7 @@ import {binaryMakerPlacementBounds,rankBinaryMakerPlacements} from '@red-cup-eng
 import {ladderGroups,buildLadder,ladderFamily} from './coherence-families.mjs';
 import {assessFamily} from './coherence.mjs';
 import {orderFeeCentsOfFills} from '@red-cup-engineering/forecasting-engine/fees';
-import {eventDate} from '@red-cup-engineering/kalshi-services-section/market-facts';
+import {eventDate} from '@red-cup-engineering/kalshi-engineering-services-section/market-facts';
 import {projectJointThresholdScenarios} from '@red-cup-engineering/mandate-portfolio-allocation-service/joint-threshold-pushforward';
 
 const validClock=(s)=>typeof s==='string'&&Number.isFinite(Date.parse(s));

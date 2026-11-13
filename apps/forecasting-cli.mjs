@@ -5,7 +5,7 @@ import { ingestForecastingQuestionFromFile } from "../scripts/ingest-forecasting
 import { fuseForecast } from "../scripts/fuse-forecast.mjs";
 import { recordForecast } from "../scripts/record-forecast.mjs";
 import { scoreForecast } from "../scripts/score-forecast.mjs";
-import { runMain } from "@red-cup-engineering/javascript-file-services-section/javascript-file-main-guard";
+import { runMain } from "@red-cup-engineering/javascript-file-engineering-services-section/javascript-file-main-guard";
 
 /**
  * Ingest a question and attributable estimates, fuse the estimates, and

@@ -12,8 +12,8 @@
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
-import { appendLogRows, feedRows, mark, unmark } from '@red-cup-engineering/kalshi-services-section/seavt-log';
-import { stateDirectory, recordDirectory } from '@red-cup-engineering/kalshi-services-section/data-layout';
+import { appendLogRows, feedRows, mark, unmark } from '@red-cup-engineering/kalshi-engineering-services-section/seavt-log';
+import { stateDirectory, recordDirectory } from '@red-cup-engineering/kalshi-engineering-services-section/data-layout';
 
 export const FEED = 'hypotheses-observation';
 export const stateRoot = (env = process.env) => env.HYPOTHESES_STATE_DIR ?? join(env.HOME ?? homedir(), '.local', 'state', '561-group', 'settlements', 'forecasting-service');

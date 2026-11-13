@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { verifyNiUri } from "@red-cup-engineering/uri-services-section/ni-uri";
+import { verifyNiUri } from "@red-cup-engineering/uri-engineering-services-section/ni-uri";
 import {
   admitNoaaCoopsWaterLevel, coopsWaterLevelUrl, readNoaaCoopsWaterLevel,
 } from "../src/coops-water-level.mjs";

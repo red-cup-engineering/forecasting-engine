@@ -1,4 +1,4 @@
-import { admitCanonicalJson, JSON_RESOURCE_ENVELOPE } from "@red-cup-engineering/json-services-section/canonical-json";
+import { admitCanonicalJson, JSON_RESOURCE_ENVELOPE } from "@red-cup-engineering/json-engineering-services-section/canonical-json";
 
 const PAGE_BYTES = 65_536;
 const PAGE_ENVELOPE = Object.freeze({ ...JSON_RESOURCE_ENVELOPE, maxSourceBytes: PAGE_BYTES, maxCanonicalBytes: PAGE_BYTES });

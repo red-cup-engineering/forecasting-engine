@@ -9,7 +9,7 @@ import {deriveDailyTemperatureExtremes} from './weather-temperature-extremes.mjs
 import {INDEX_CITIES,weatherIndexContractScope,collectWeatherIndexEvidence} from './weather-index.mjs';
 import {TEMPERATURE_MARKETS} from './temperature-market-model.mjs';
 import {planWeatherReasoningCadence,temperatureReasoningTimeZones} from './weather-reasoning-cadence.mjs';
-import { binarySettlement, marketSettlementTiming } from '@red-cup-engineering/kalshi-services-section/market-facts';
+import { binarySettlement, marketSettlementTiming } from '@red-cup-engineering/kalshi-engineering-services-section/market-facts';
 import {randomUUID,createHash} from 'node:crypto';
 import {updateStationScience,readStationScience,readStationSciencePage,stationPointForecasts,stationScienceReport,readScienceState,scienceStateAt} from './station-weather-science.mjs';
 import {loadWeatherEvidence,sealDerivedRecord,putEvidence,indexDerived,ageDerived,readEvidenceRecord,evidenceStore,expireSources,sourceRetentionDays} from './weather-evidence-record.mjs';
@@ -28,7 +28,7 @@ import { createInterface } from 'node:readline';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 import { gzipSync } from 'node:zlib';
-import { createKalshiClient } from '@red-cup-engineering/kalshi-services-section/client';
+import { createKalshiClient } from '@red-cup-engineering/kalshi-engineering-services-section/client';
 import { digest, discoverWeather, weatherRuleKey, weatherContract, mapLimit } from './weather-universe.mjs';
 import { collectWeatherEvidence, collectStationWeatherEvidence, weatherEstimates, forecastCell } from './weather-evidence.mjs';
 import { probabilityBand, allocateWeather } from '@red-cup-engineering/forecasting-engine/weather-learning';
@@ -38,7 +38,7 @@ import {sourceReport} from './weather-settlement-source.mjs';
 import {modalTemperatureReading} from './weather-modal-outcomes.mjs';
 import { bracketSettlesYes } from './temperature-distribution.mjs';
 
-import {settlementRoot,stateDirectory} from '@red-cup-engineering/kalshi-services-section/data-layout';
+import {settlementRoot,stateDirectory} from '@red-cup-engineering/kalshi-engineering-services-section/data-layout';
 /** The weather engine's state: one object-state directory of the Kalshi settlement, data/state/weather-state. */
 export const weatherRoot=(env=process.env)=>env.KALSHI_WEATHER_STATE_DIR??stateDirectory(settlementRoot(env),'weather');
 export function weatherClient({fetchImpl=fetch}={}) {

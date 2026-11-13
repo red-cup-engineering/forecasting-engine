@@ -14,7 +14,7 @@
 import { mkdirSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { runJavascriptNodeOperation } from '@red-cup-engineering/javascript-node-services-section/operation';
+import { runJavascriptNodeOperation } from '@red-cup-engineering/javascript-node-engineering-services-section/operation';
 import { KALSHI_API } from '../src/kalshi-market-brief.mjs';
 import {
   HORIZONS_HOURS, addMarketToEvent, derivePrefixFamilies, evaluateCells, foldEvent, hashString,

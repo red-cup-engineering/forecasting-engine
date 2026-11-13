@@ -8,7 +8,7 @@
 import { readFileSync } from 'node:fs';
 import { bracketProbability, forecastScale } from './temperature-distribution.mjs';
 import { guidanceForExtreme } from './nbm-station-guidance.mjs';
-import {eventDate} from '@red-cup-engineering/kalshi-services-section/market-facts';
+import {eventDate} from '@red-cup-engineering/kalshi-engineering-services-section/market-facts';
 
 export const TEMPERATURE_MARKETS = JSON.parse(readFileSync(new URL('../content/config/temperature-markets.json', import.meta.url), 'utf8'));
 const BY_SERIES = new Map(TEMPERATURE_MARKETS.series.map((row) => [row.seriesTicker, row]));

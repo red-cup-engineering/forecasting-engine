@@ -1,6 +1,6 @@
 /** Weather-market actions, separate from physical forecast generation.
  * Observed depth and conditional commitments do not identify maker fills. */
-import {initialPosition,extend,moveOfFrame,marketAt,queueAhead,walkTake,shadowRest,ONE} from '@red-cup-engineering/kalshi-services-section/arena';
+import {initialPosition,extend,moveOfFrame,marketAt,queueAhead,walkTake,shadowRest,ONE} from '@red-cup-engineering/kalshi-engineering-services-section/arena';
 import {participationFeeTerms as feeTerms} from './weather-capital.mjs';
 import {fragmentedWeatherFeeReserve as feeReserve,weatherFillSelectionBounds} from './weather-capital.mjs';
 import {gradedFromParts,gradedToDecimalString} from '@red-cup-engineering/exact-number-data-service/graded';

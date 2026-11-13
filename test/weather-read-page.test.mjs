@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { weatherReadPage, weatherStatusInventory } from "../src/weather-read-page.mjs";
-import { makeNiUri, verifyNiUri } from "@red-cup-engineering/uri-services-section/ni-uri";
+import { makeNiUri, verifyNiUri } from "@red-cup-engineering/uri-engineering-services-section/ni-uri";
 import { readWeatherSourceRecord } from "../src/weather-source-record.mjs";
 import { mkdtemp, writeFile, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";

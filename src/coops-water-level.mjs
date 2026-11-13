@@ -10,8 +10,8 @@
  * Source rights: https://oceanservice.noaa.gov/disclaimer.html
  */
 import { readBody } from "@red-cup-engineering/http-engineering-services-section/body/web";
-import { makeNiUri } from "@red-cup-engineering/uri-services-section/ni-uri";
-import { admitCanonicalJson, JSON_RESOURCE_ENVELOPE } from "@red-cup-engineering/json-services-section/canonical-json";
+import { makeNiUri } from "@red-cup-engineering/uri-engineering-services-section/ni-uri";
+import { admitCanonicalJson, JSON_RESOURCE_ENVELOPE } from "@red-cup-engineering/json-engineering-services-section/canonical-json";
 
 const COOPS_ORIGIN = "https://api.tidesandcurrents.noaa.gov";
 const COOPS_PATH = "/api/prod/datagetter";
