@@ -3,7 +3,7 @@
   "sourceRevalidated": true,
   "receiving": "passed",
   "sourceHashes": {
-    "lib/emsenn/services/561-group/services/engineering-services-section/services/computer-engineering-services-section/services/computer-systems-engineering-services-section/services/computer-web-engineering-services-section/services/web-platform-services-section/services/web3-platform-services-section/web3-gambling-platform-services-section/services/kalshi-services-section/services/forecasting-service/src/weather-evidence.mjs": "bc0116ac1e39090fe94c96c9b5dd53655e939c945eebd4c11297e461fe815bc5"
+    "lib/emsenn/services/561-group/services/engineering-services-section/services/computer-engineering-services-section/services/computer-systems-engineering-services-section/services/computer-web-engineering-services-section/services/web-platform-services-section/services/web3-platform-services-section/web3-gambling-platform-engineering-services-section/services/kalshi-services-section/services/forecasting-service/src/weather-evidence.mjs": "bc0116ac1e39090fe94c96c9b5dd53655e939c945eebd4c11297e461fe815bc5"
   },
   "deployment": "passed",
   "assessor": "same primary",

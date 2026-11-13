@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-WorkingDirectory=/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-engineering-services-section/services/computer-systems-engineering-services-section/services/computer-web-engineering-services-section/services/web-platform-services-section/services/web3-platform-services-section/web3-gambling-platform-services-section/services/kalshi-services-section/services/forecasting-service
+WorkingDirectory=/home/emsenn/info/lib/emsenn/services/561-group/services/engineering-services-section/services/computer-engineering-services-section/services/computer-systems-engineering-services-section/services/computer-web-engineering-services-section/services/web-platform-services-section/services/web3-platform-services-section/web3-gambling-platform-engineering-services-section/services/kalshi-services-section/services/forecasting-service
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
 # METACULUS_TOKEN=... (the bot account's API token; the founder creates it, mode 0600). Holds nothing else.
 EnvironmentFile=%h/.config/561-group/metaculus.env

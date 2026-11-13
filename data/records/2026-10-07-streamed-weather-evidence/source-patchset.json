@@ -6,7 +6,7 @@
   "changes": [
     {
       "operation": "edit",
-      "path": "lib/emsenn/services/561-group/services/engineering-services-section/services/computer-engineering-services-section/services/computer-systems-engineering-services-section/services/computer-web-engineering-services-section/services/web-platform-services-section/services/web3-platform-services-section/web3-gambling-platform-services-section/services/kalshi-services-section/services/forecasting-service/src/weather-engine.mjs",
+      "path": "lib/emsenn/services/561-group/services/engineering-services-section/services/computer-engineering-services-section/services/computer-systems-engineering-services-section/services/computer-web-engineering-services-section/services/web-platform-services-section/services/web3-platform-services-section/web3-gambling-platform-engineering-services-section/services/kalshi-services-section/services/forecasting-service/src/weather-engine.mjs",
       "inputSha256": "05adb365a6712a9ac1c1b1ee5fca55d05276e29acda8b145a77df0526f9d2043",
       "replacements": [
         {

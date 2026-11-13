@@ -6,7 +6,7 @@
   "previousRuntime": "/home/emsenn/.local/share/561-group/weather-research/releases/7da74f82dd70ddb77c7caeff085e362cf4136a4a64d3ad77da3143e43f842fbb",
   "retainedFiles": 207,
   "sourcePathsChanged": [
-    "lib/emsenn/services/561-group/services/engineering-services-section/services/computer-engineering-services-section/services/computer-systems-engineering-services-section/services/computer-web-engineering-services-section/services/web-platform-services-section/services/web3-platform-services-section/web3-gambling-platform-services-section/services/kalshi-services-section/services/forecasting-service/src/station-observations.mjs"
+    "lib/emsenn/services/561-group/services/engineering-services-section/services/computer-engineering-services-section/services/computer-systems-engineering-services-section/services/computer-web-engineering-services-section/services/web-platform-services-section/services/web3-platform-services-section/web3-gambling-platform-engineering-services-section/services/kalshi-services-section/services/forecasting-service/src/station-observations.mjs"
   ],
   "patchsetMaterializer": "existing deterministic source-patchset materializer",
   "retainedDependencyClosureVerified": true,
