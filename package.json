@@ -91,7 +91,7 @@
     "@red-cup-engineering/metrologic": "^0.22.1",
     "@red-cup-engineering/information-forecasting-computer-systems-engineering-services-section": "0.3.0",
     "@red-cup-engineering/uri-engineering-services-section": "0.1.1",
-    "@red-cup-engineering/json-engineering-services-section": "0.4.0",
+    "@red-cup-engineering/json-engine": "0.5.0",
     "@red-cup-engineering/semiotic-eavt-engineering-services-section": "^0.6.0",
     "@red-cup-engineering/computer-text-content-engineering-services-section": "0.1.0",
     "@red-cup-engineering/gaming": "0.1.10",
