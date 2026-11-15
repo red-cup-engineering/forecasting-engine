@@ -106,7 +106,7 @@
     "@red-cup-engineering/kalshi-engineering-services-section": "^0.1.58",
     "@red-cup-engineering/computer-file-engineering-services-section": "^0.8.8",
     "@red-cup-engineering/path-walking-service": "^0.5.3",
-    "@red-cup-engineering/javascript-node-operation-service": "^0.1.1"
+    "@red-cup-engineering/node-js-function-engineering-services-section": "^0.5.4"
   },
   "engines": {
     "node": ">=22"
