@@ -122,7 +122,7 @@
     "@red-cup-engineering/position-sizing-service": "^0.5.3",
     "@red-cup-engineering/http-engineering-services-section": "^0.6.6",
     "@red-cup-engineering/computer-file-engineering-services-section": "^0.8.8",
-    "@red-cup-engineering/path-walking-service": "^0.5.3",
+    "@red-cup-engineering/computer-file-engine": "0.1.0",
     "@red-cup-engineering/node-js-function-engineering-services-section": "^0.5.4"
   },
   "engines": {
