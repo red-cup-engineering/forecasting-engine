@@ -46,7 +46,7 @@ import {removeFile} from '@red-cup-engineering/computer-file-engineering-service
 import {statPath} from '@red-cup-engineering/computer-file-engineering-services-section/stat-path';
 import {bgzfPack} from '@red-cup-engineering/computer-file-engineering-services-section/bgzf';
 import {createContentTreeStore} from '@red-cup-engineering/computer-file-engineering-services-section/content-tree-store';
-import {walkPosixPaths} from '@red-cup-engineering/path-walking-service';
+import {walkPosixPaths} from '@red-cup-engineering/computer-file-engine';
 import {hoistRun,unhoistRun} from './weather-run-hoist.mjs';
 import {DERIVED_KIND,sealDerivedRecord,useEvidenceStore,sourceRefName,loadWeatherEvidence,isUsedParameterKey,isUsedForecast,evidenceStore,putEvidenceAlias} from './weather-evidence-record.mjs';
 import {jsonDigest} from './weather-state-tree.mjs';

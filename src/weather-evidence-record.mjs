@@ -71,7 +71,7 @@
  *     re-derived from scienceState; for a migrated record it is the historicalScience tree.
  */
 import {readFileBytes} from '@red-cup-engineering/computer-file-engineering-services-section/read-file';
-import {walkPosixPaths} from '@red-cup-engineering/path-walking-service';
+import {walkPosixPaths} from '@red-cup-engineering/computer-file-engine';
 import {hoistRun,unhoistRun} from './weather-run-hoist.mjs';
 import {gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
