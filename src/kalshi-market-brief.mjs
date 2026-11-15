@@ -89,7 +89,8 @@
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { priceTemperatureBracket, eventDate, temperatureSeries, TEMPERATURE_MARKETS } from './temperature-market-model.mjs';
+import { priceTemperatureBracket, temperatureSeries, TEMPERATURE_MARKETS } from './temperature-market-model.mjs';
+import { eventDate } from './market-outcome.mjs';
 import { latestStationGuidance } from './nbm-station-guidance.mjs';
 import { climateDate, observedExtremes } from './station-observations.mjs';
 

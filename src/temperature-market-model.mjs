@@ -8,7 +8,7 @@
 import { readFileSync } from 'node:fs';
 import { bracketProbability, forecastScale } from './temperature-distribution.mjs';
 import { guidanceForExtreme } from './nbm-station-guidance.mjs';
-import {eventDate} from '@red-cup-engineering/kalshi-engineering-services-section/market-facts';
+import {eventDate} from './market-outcome.mjs';
 
 export const TEMPERATURE_MARKETS = JSON.parse(readFileSync(new URL('../content/config/temperature-markets.json', import.meta.url), 'utf8'));
 const BY_SERIES = new Map(TEMPERATURE_MARKETS.series.map((row) => [row.seriesTicker, row]));
@@ -17,7 +17,6 @@ const BY_SERIES = new Map(TEMPERATURE_MARKETS.series.map((row) => [row.seriesTic
 export const temperatureSeries = (seriesTicker) => BY_SERIES.get(seriesTicker);
 
 /** Compatibility export: generic Kalshi ticker-date interpretation belongs to the venue. */
-export {eventDate};
 
 /**
  * The probability one bracket settles yes, with everything it rests on.

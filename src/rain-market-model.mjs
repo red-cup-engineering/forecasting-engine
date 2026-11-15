@@ -18,7 +18,7 @@ import {poolProbabilities} from './probability-calibration.mjs';
  * (src/nbm-station-guidance.mjs, which parses P06).
  */
 import { readFileSync } from 'node:fs';
-import { eventDate } from './temperature-market-model.mjs';
+import { eventDate } from './market-outcome.mjs';
 
 export const RAIN_MARKETS = JSON.parse(readFileSync(new URL('../content/config/rain-markets.json', import.meta.url), 'utf8'));
 export const RAIN_SERIES = RAIN_MARKETS.series;

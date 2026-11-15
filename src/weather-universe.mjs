@@ -1,6 +1,7 @@
 import {weatherIndexBinding} from './weather-index.mjs';
 import { createHash } from 'node:crypto';
-import { temperatureSeries, eventDate } from './temperature-market-model.mjs';
+import { temperatureSeries } from './temperature-market-model.mjs';
+import { eventDate } from './market-outcome.mjs';
 import { rainCityCode, rainCity } from './rain-market-model.mjs';
 export const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export async function mapLimit(rows, limit, fn) {
