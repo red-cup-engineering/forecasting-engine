@@ -1,6 +1,6 @@
 {
   "name": "@red-cup-engineering/forecasting-engine",
-  "version": "0.8.3-dev.0",
+  "version": "0.8.3",
   "type": "module",
   "repository": {
     "type": "git",
@@ -119,7 +119,7 @@
     "@red-cup-engineering/mandate-portfolio-allocation-service": "^0.2.5",
     "@red-cup-engineering/position-sizing-service": "^0.5.3",
     "@red-cup-engineering/http-engineering-services-section": "^0.6.6",
-    "@red-cup-engineering/computer-file-engineering-services-section": "^0.8.8",
+    "@red-cup-engineering/computer-file-engineering-services-section": "^0.8.11",
     "@red-cup-engineering/node-js-function-engineering-services-section": "^0.5.4",
     "@red-cup-engineering/computer-file-engine": "^0.1.0"
   },
