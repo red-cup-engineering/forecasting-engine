@@ -16,12 +16,13 @@
  * column per forecast hour, blank where the element has no value. TXN is
  * the daytime maximum in the 00Z column and the overnight minimum in the 12Z
  * column; XND is NBM's own spread for it, in whole degrees F.
+ * Operational headers can omit the version token.
  */
 import { mkdir, readFile, readdir, rename, unlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export const NBM_OPEN_DATA = 'https://noaa-nbm-grib2-pds.s3.amazonaws.com';
-const HEADER = /^\s*(\S+)\s+NBM V[\d.]+ NBS GUIDANCE\s+(\d\d)\/(\d\d)\/(\d{4})\s+(\d\d)(\d\d) UTC/u;
+const HEADER = /^\s*(\S+)\s+NBM(?:[^\S\n]+V[\d.]+)?[^\S\n]+NBS GUIDANCE\s+(\d\d)\/(\d\d)\/(\d{4})\s+(\d\d)(\d\d) UTC/u;
 const ROWS = new Set(['FHR', 'TXN', 'XND', 'TMP', 'TSD', 'P06', 'Q06', 'S06']);
 
 const pad2 = (n) => String(n).padStart(2, '0');
