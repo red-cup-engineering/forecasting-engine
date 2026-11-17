@@ -56,14 +56,15 @@ export function weatherIndexBinding(m,series){
 const receivedMethodologyBodies=new WeakMap();
 function receivedIndexMethodology(document,city,availableAt){
  if(!document||document.url!==`https://assets.kalshi.com/contract_terms/${INDEX_CITIES[city].terms}.pdf`||!Number.isFinite(Date.parse(document.availableAt))||!Number.isFinite(Date.parse(document.decodedAt))||Date.parse(document.availableAt)>Date.parse(document.decodedAt)||Date.parse(document.decodedAt)>availableAt||!/^\d+\.\d+$/.test(document.configurationVersion??'')||document.precisionF!==.01||!Number.isInteger(document.quorum?.members)||document.quorum.members<1||!Number.isFinite(document.quorum?.weight)||document.quorum.weight<=0||document.quorum.weight>1||typeof document.rawPdfBase64!=='string'||document.rawPdfBase64.length>3*1024*1024)return false;
- let parsed;try{parsed=parseIndexMethodology(document.rawText,city);}catch{return false;}
- if(parsed.configurationVersion!==document.configurationVersion||parsed.quorum.members!==document.quorum.members||parsed.quorum.weight!==document.quorum.weight||parsed.precisionF!==document.precisionF||parsed.roundingTieRule!==document.roundingTieRule)return false;
- // Repeated target/minute projections share one original PDF. Recheck its
- // bytes only when the byte carrier or claimed digest changes.
  const previous=receivedMethodologyBodies.get(document);
- if(previous?.rawPdfBase64===document.rawPdfBase64&&previous.rawText===document.rawText&&previous.sha256===document.sha256&&previous.bytes===document.bytes)return previous.valid;
+ const sameText=previous?.city===city&&previous.rawText===document.rawText;
+ let parsed=sameText?previous.parsed:null;
+ if(!parsed){try{parsed=parseIndexMethodology(document.rawText,city);}catch{return false;}}
+ if(parsed.configurationVersion!==document.configurationVersion||parsed.quorum.members!==document.quorum.members||parsed.quorum.weight!==document.quorum.weight||parsed.precisionF!==document.precisionF||parsed.roundingTieRule!==document.roundingTieRule)return false;
+ // The same city and text share parsed terms, while claims and clocks are checked for every call.
+ if(sameText&&previous.rawPdfBase64===document.rawPdfBase64&&previous.sha256===document.sha256&&previous.bytes===document.bytes)return previous.valid;
  const bytes=Buffer.from(document.rawPdfBase64,'base64'),valid=bytes.length===document.bytes&&bytes.subarray(0,5).toString()==='%PDF-'&&bytes.toString('base64')===document.rawPdfBase64&&createHash('sha256').update(bytes).digest('hex')===document.sha256;
- receivedMethodologyBodies.set(document,{rawPdfBase64:document.rawPdfBase64,rawText:document.rawText,sha256:document.sha256,bytes:document.bytes,parsed,valid});return valid;
+ receivedMethodologyBodies.set(document,{city,rawPdfBase64:document.rawPdfBase64,rawText:document.rawText,sha256:document.sha256,bytes:document.bytes,parsed,valid});return valid;
 }
 /** Bind eligibility to the actual received city law, rather than its URL alone.
  * Receipt/generation clocks are evidence availability, never a new law identity. */
