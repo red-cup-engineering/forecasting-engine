@@ -277,15 +277,28 @@ export function ageDerivedRecord(record,id){
 }
 /**
  * Age the derived records older than the working window, oldest first, at most `limit` (a cycle's share): each is stored in its
- * aged form under alias/<id> and its strong ref evidence/<id> removed, so the old id still resolves. Resolves {aged}.
+ * aged form under alias/<id> and its strong ref evidence/<id> removed, so the old id still resolves. The count includes
+ * interrupted moves recovered into the aged inventory.
  */
 export async function ageDerived({root,now=Date.now(),workingWindowDays,limit=200}={}){
   const store=evidenceStore(root),agedIndex=await readAgedIndex(root),held=await readTree(store,DERIVED_INDEX_REF),index={...(held?.value??await buildDerivedIndex(root))},cutoff=now-workingWindowDays*DAY;
   const due=Object.entries(index).filter(([,at])=>Date.parse(at)<cutoff).sort((a,b)=>a[1].localeCompare(b[1])).slice(0,limit);
   let aged=0;
-  for(const [id] of due){
+  for(const [id,at] of due){
     const address=await store.getRef('evidence/'+id);
-    if(!address){delete index[id];continue;}
+    if(!address){
+      if(!Object.hasOwn(agedIndex,id)){
+        const alias=await store.getRef('alias/'+id);
+        const record=alias?await store.get(alias):null;
+        if(record?.kind===DERIVED_KIND&&record.version===3&&record.scienceStateAged===true
+          &&record.supersedes===id&&record.at===at){
+          agedIndex[id]=at;
+          aged++;
+        }
+      }
+      delete index[id];
+      continue;
+    }
     const record=await store.get(address);
     if(record?.kind!==DERIVED_KIND||record.version!==3||!record.scienceState){delete index[id];continue;}
     const slim=ageDerivedRecord(record,id),slimAddress=await store.put(slim);
@@ -293,8 +306,9 @@ export async function ageDerived({root,now=Date.now(),workingWindowDays,limit=20
     await store.setRef('alias/'+id,slimAddress);await store.deleteRef('evidence/'+id);
     agedIndex[id]=record.at;delete index[id];aged++;
   }
-  if(due.length||!held)await saveTree(store,DERIVED_INDEX_REF,index);
+  // Keep the derived index as a retry source until the aged inventory is durable.
   if(aged)await saveTree(store,AGED_INDEX_REF,agedIndex);
+  if(due.length||!held)await saveTree(store,DERIVED_INDEX_REF,index);
   return {aged};
 }
 
