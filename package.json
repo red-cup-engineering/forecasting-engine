@@ -1,6 +1,6 @@
 {
   "name": "@red-cup-engineering/forecasting-engine",
-  "version": "0.8.2",
+  "version": "0.8.3-dev.0",
   "type": "module",
   "repository": {
     "type": "git",
