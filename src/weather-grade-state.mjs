@@ -104,12 +104,12 @@ export async function gradeHistory({path}){
       if(gradable(r))for(const m of r.models){const k=gradeKey(r,m),was=first.get(k);if(was===undefined||r.at.localeCompare(was)<0)first.set(k,r.at);}
     }
   }catch(error){if(error.code!=='ENOENT')throw error;return {};}
-  const accumulator=createCompactGradeAccumulator(),counted=new Set();
+  const accumulator=createCompactGradeAccumulator();
   for await(const {line,end} of completeLines(path)){
     if(end>offset)break;
     if(!line)continue;
     const r=JSON.parse(line);
-    if(gradable(r))for(const m of r.models){const k=gradeKey(r,m);if(first.get(k)!==r.at||counted.has(k))continue;counted.add(k);accumulator.add({...r,models:[m]});}
+    if(gradable(r))for(const m of r.models){const k=gradeKey(r,m);if(first.get(k)!==r.at)continue;first.delete(k);accumulator.add({...r,models:[m]});}
   }
   return accumulator.report();
 }
