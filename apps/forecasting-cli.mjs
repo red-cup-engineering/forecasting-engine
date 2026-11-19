@@ -20,8 +20,8 @@ export function runForecastingPipeline(questionPath, estimatesPath, options = {}
   const question = ingestForecastingQuestionFromFile(questionPath);
   const evidence = JSON.parse(readFileSync(resolve(estimatesPath), "utf8"));
   const { forecast, fusion } = fuseForecast({ questionId: question.id, evidenceEstimates: evidence });
-  const receipt = recordForecast(forecast, { dataRoot: options.dataRoot });
-  return { question, evidence, forecast, fusion, receipt };
+  const record = recordForecast(forecast, { dataRoot: options.dataRoot });
+  return { question, evidence, forecast, fusion, receipt: record };
 }
 
 /**

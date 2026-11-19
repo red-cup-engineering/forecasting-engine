@@ -170,7 +170,7 @@ export function analyzeAaaGasMarketGame({
     catch(error){projectionGaps.push({reason:'unqualified shared market-game scenario: '+error.message});}}
   const coherence=[{...c,interpretation:'existing Kalshi structural LP; hypothetical simultaneous book execution, fees and queue constraints still require receiving'}];
   const byTicker=new Map(event.markets.map(m=>[m.ticker,m]));
-  const admitted=[],gaps=[];
+  const validated=[],gaps=[];
   for(const row of quoteCandidates){
     if(!row||typeof row.id!=='string'||!byTicker.has(row.ticker)||
        !['yes','no'].includes(row.side))
@@ -210,13 +210,13 @@ export function analyzeAaaGasMarketGame({
         marketObservedAt:m.marketObservedAt,modelAvailableAt:row.modelAvailableAt,
         fillAvailableAt:row.fillAvailableAt,seriesFeeType:feeType},
     };
-    try{binaryMakerPlacementBounds(proposed);admitted.push(proposed);}
+    try{binaryMakerPlacementBounds(proposed);validated.push(proposed);}
     catch(error){gaps.push({candidate:row.id,reason:'invalid conditional probability or cost assumptions: '+error.message});}
   }
   return {...base,status:'read-only-research',
     sourceBinding:'AAA average regular gasoline strictly greater than the named strike; source published after market close is not pre-close information',
     sourceScope:scope,
-    coherence,scenarioProjection,maker:rankBinaryMakerPlacements(admitted),gaps:[...projectionGaps,...gaps],
+    coherence,scenarioProjection,maker:rankBinaryMakerPlacements(validated),gaps:[...projectionGaps,...gaps],
     experimentalLimits:[
       'No calibrated AAA forward distribution supplied unless externally measured and timestamped',
       'No derived per-order queue/fill probability unless externally measured and timestamped',

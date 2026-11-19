@@ -48,17 +48,17 @@ export async function migrateMarketData({ root = forecastingRoot(), cacheDirecto
       const dir = join(backfill, run, 'cache');
       if (!existsSync(dir)) continue;
       const entry = { run, tape: { files: 0, bytes: 0, verified: 0 }, candles: { files: 0, bytes: 0, verified: 0, rows: 0 }, problems: [] };
-      const tapeByMin = new Map();
+      const logByMin = new Map();
       for (const name of tails(join(dir, 'tape'))) {
         const file = join(dir, 'tape', name), record = JSON.parse(readFileSync(file, 'utf8'));
         entry.tape.files += 1; entry.tape.bytes += sizeOf(file);
         await cache.tape.put(record.minTs, record.maxTs, record);
-        tapeByMin.set(record.minTs, record);
+        logByMin.set(record.minTs, record);
         if (JSON.stringify(await cache.tape.get(record.minTs, record.maxTs)) === JSON.stringify(record)) { entry.tape.verified += 1; if (apply) rmSync(file); } else entry.problems.push(`tape ${name} did not read back`);
       }
       for (const name of tails(join(dir, 'candles'))) {
         const file = join(dir, 'candles', name), rows = JSON.parse(readFileSync(file, 'utf8')), minTs = Number(name.replace('.json', ''));
-        const window = tapeByMin.get(minTs);
+        const window = logByMin.get(minTs);
         entry.candles.files += 1; entry.candles.bytes += sizeOf(file); entry.candles.rows += rows.length;
         if (!window) { entry.problems.push(`candles ${name}: no tape window to say its range`); continue; }
         const from = minTs - 1800, to = window.maxTs, tickers = [...new Set(rows.map((r) => r.ticker))];

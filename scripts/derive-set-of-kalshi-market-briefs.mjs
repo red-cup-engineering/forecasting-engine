@@ -177,7 +177,7 @@ export async function deriveSetOfKalshiMarketBriefs(request = {}, io = {}) {
     { maxEvents: maxEvents - reserved.length, perFamily: request.perFamily ?? 3, perCategory: request.perCategory ?? Math.ceil(maxEvents / 4) });
   const chosen = [...reserved, ...diverse];
 
-  const briefs = [], refused = [];
+  const briefs = [], rejected = [];
   for (const pick of chosen) {
     try {
       const built = assembled.get(pick.eventTicker) ?? await assemble(pick);
@@ -190,13 +190,13 @@ export async function deriveSetOfKalshiMarketBriefs(request = {}, io = {}) {
         markets: brief.markets.length, volume24h: brief.book.volume24h, houseStatus: brief.house.status, opportunities: brief.opportunities.length, url: brief.event.url,
       });
     } catch (error) {
-      refused.push({ eventTicker: pick.eventTicker, reason: String(error.message ?? error) });
+      rejected.push({ eventTicker: pick.eventTicker, reason: String(error.message ?? error) });
     }
   }
   const summary = {
     asOf, directory, withinHours,
     considered: { openMarketsScanned: scanned.length, marketsInWindow: markets.length, eventsWithABook: events.size, eventsAboveVolumeFloor: liquid.length, minVolume24h, selected: chosen.length },
-    written: briefs.length, refused, briefs,
+    written: briefs.length, refused: rejected, briefs,
   };
   writeAtomic(join(directory, `index.${asOf.replace(/[-:.]/gu, '').slice(0, 15)}Z.json`), summary);
   return summary;

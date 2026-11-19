@@ -47,19 +47,19 @@ export function gradeFamily(family, rows, results) {
     ...(family === 'btc' ? { highVolWeek: hiVolDays.size >= bar.minHighVolDays } : {}),
     ...(family === 'fed' ? { nonHoldEvents: nonHold.size >= bar.minNonHoldEvents } : {}),
   };
-  const retire = events.size >= bar.retireAfterEvents && ci.mean !== null && ci.mean <= 0;
+  const remove = events.size >= bar.retireAfterEvents && ci.mean !== null && ci.mean <= 0;
   return {
     family, settledTakeRows: takes.length, settledEvents: events.size, days: days.size, highVolDays: hiVolDays.size, nonHoldEvents: nonHold.size,
     unsettledTakeRows: rows.filter((r) => r.take).length - takes.length,
     meanEvCents: ci.mean === null ? null : round(ci.mean * 100, 2), ci95Cents: ci.lo === null ? null : [round(ci.lo * 100, 2), round(ci.hi * 100, 2)],
-    clusters: ci.clusters, checks, admit: Object.values(checks).every(Boolean), retire, bar: bar.note,
+    clusters: ci.clusters, checks, admit: Object.values(checks).every(Boolean), retire: remove, bar: bar.note,
   };
 }
 
 // Settlement lookups (cached in results.jsonl; one line per settled ticker).
 export function loadResults(root) {
   const f = join(root, 'results.jsonl'); const m = new Map();
-  if (existsSync(f)) for (const line of readFileSync(f, 'utf8').split('\n')) { if (line) { try { const o = JSON.parse(line); const admitted=binarySettlement(o.market); if(admitted&&Number(o.market.notional_value_dollars)===1&&admitted.ticker===o.ticker&&admitted.result===o.result)m.set(o.ticker, o.result); } catch { /* torn */ } } }
+  if (existsSync(f)) for (const line of readFileSync(f, 'utf8').split('\n')) { if (line) { try { const o = JSON.parse(line); const validated=binarySettlement(o.market); if(validated&&Number(o.market.notional_value_dollars)===1&&validated.ticker===o.ticker&&validated.result===o.result)m.set(o.ticker, o.result); } catch { /* torn */ } } }
   return m;
 }
 export async function settle(client, tickers, results, root, { maxCalls = 400 } = {}) {
@@ -88,7 +88,7 @@ export async function gradeAll({ client, root, families = Object.keys(BARS) }) {
   }
   return per;
 }
-export function readoutMarkdown(per, at) {
+export function reportMarkdown(per, at) {
   const lines = [`# Category shadows admission readout`, `Generated ${at}. Log-only; no family is admitted to capital by this readout alone.`, ''];
   for (const g of Object.values(per)) {
     lines.push(`## ${g.family}: ${g.admit ? 'MEETS BAR' : g.retire ? 'RETIRE' : 'not yet'}`, `- settled would-take rows ${g.settledTakeRows} (unsettled ${g.unsettledTakeRows}), events ${g.settledEvents}, days ${g.days}`, `- mean EV ${g.meanEvCents}c per contract, 95% CI ${JSON.stringify(g.ci95Cents)} (${g.clusters} clusters)`, `- checks ${JSON.stringify(g.checks)}`, `- bar: ${g.bar}`, '');

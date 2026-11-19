@@ -6,7 +6,7 @@ const PAGE_ENVELOPE = Object.freeze({ ...JSON_RESOURCE_ENVELOPE, maxSourceBytes:
 // This retains the upstream object/depth/string bounds, not just byte size.
 const wireBytes = value => admitCanonicalJson(JSON.stringify(value), PAGE_ENVELOPE).byteLength;
 
-export function admitWeatherPageWire(value) {
+export function validateWeatherPageWire(value) {
   return admitCanonicalJson(JSON.stringify(value), PAGE_ENVELOPE).value;
 }
 
@@ -34,7 +34,7 @@ export function weatherReadPage(record, { source, field, allowedFields, offset =
     byteLength += rowBytes + 1;
     response.nextOffset = offset + response.rows.length < entries.length ? offset + response.rows.length : null;
   }
-  return admitWeatherPageWire(response);
+  return validateWeatherPageWire(response);
 }
 
 function text(value, name, maxLength) {
@@ -56,7 +56,7 @@ export function weatherStatusInventory(record, { source, running = null, lastFai
   const at = text(record.at, "at", 128);
   if (running !== null && (typeof running !== "object" || Array.isArray(running))) throw new TypeError("running must be a recorded object or absent");
   if (lastFailure !== null && (typeof lastFailure !== "object" || Array.isArray(lastFailure))) throw new TypeError("lastFailure must be a recorded object or absent");
-  return admitWeatherPageWire({ source: { ...source, at: text(source?.at, "source.at", 128) },
+  return validateWeatherPageWire({ source: { ...source, at: text(source?.at, "source.at", 128) },
     status: text(record.status, "status", 2048), at, complete: record.complete ?? null,
     marketCount: countValue(record.marketCount, "marketCount"), modelled: countValue(record.modelled, "modelled"),
     running: running === null ? null : { startedAt: text(running.startedAt, "running.startedAt", 128) },

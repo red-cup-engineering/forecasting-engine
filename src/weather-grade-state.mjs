@@ -85,9 +85,9 @@ export function createCompactGradeAccumulator() {
         const half=z*Math.sqrt(rate*(1-rate)/count+z*z/(4*count*count))/den;
         return {n:count,rate,low:Math.max(0,center-half),high:Math.min(1,center+half)};
       });
-      const admitted=Number.isFinite(lower)&&lower>0;
-      const weight=admitted?Math.min(1,lower/mean):0;
-      out[key]={version:2,dates:n,events:byGroup[g].events.length,brierImprovement:mean,improvementLower95:lower,admitted,weight,admission:'positive date-clustered one-sided 95% Brier improvement; weight lower/mean',bins};
+      const validated=Number.isFinite(lower)&&lower>0;
+      const weight=validated?Math.min(1,lower/mean):0;
+      out[key]={version:2,dates:n,events:byGroup[g].events.length,brierImprovement:mean,improvementLower95:lower,admitted: validated,weight,admission:'positive date-clustered one-sided 95% Brier improvement; weight lower/mean',bins};
     });
     return out;
   }

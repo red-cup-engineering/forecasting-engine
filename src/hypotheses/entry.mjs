@@ -45,15 +45,15 @@ export function quoteQualifies(entry, quote) {
  * @returns {{entries: object[], refused: number, noQuote: number, considered: number}}
  *   refused: rows whose quote or close precedes registeredAt (never judged).
  */
-export function entriesFromTape(h, tape) {
+export function entriesFromLog(h, log) {
   const registered = Date.parse(h.registeredAt), en = h.entry;
   const byEvent = new Map();
-  let refused = 0, noQuote = 0, considered = 0;
-  for (const row of tape) {
+  let rejected = 0, noQuote = 0, considered = 0;
+  for (const row of log) {
     if (row.result !== 'yes' && row.result !== 'no') continue;
-    if (Date.parse(row.close) < registered) { refused += 1; continue; }
+    if (Date.parse(row.close) < registered) { rejected += 1; continue; }
     if (!twoSided(row.quote)) { noQuote += 1; continue; }
-    if (Date.parse(row.quote.ts) < registered) { refused += 1; continue; }
+    if (Date.parse(row.quote.ts) < registered) { rejected += 1; continue; }
     considered += 1;
     if (!quoteQualifies(en, row.quote)) continue;
     if (!byEvent.has(row.event)) byEvent.set(row.event, []);
@@ -73,5 +73,5 @@ export function entriesFromTape(h, tape) {
     const mult = h.fee.multiplier === 'series' ? row.multiplier : h.fee.multiplier;
     return { g: clusterOf(h.cluster, row), ticker: row.ticker, event: row.event, side: en.side, price, at: row.quote.ts, date: row.close, won, x: netPerContract({ won, price, multiplier: mult, fee: h.fee }) };
   }).sort((a, b) => (a.ticker < b.ticker ? -1 : 1));
-  return { entries, refused, noQuote, considered };
+  return { entries, refused: rejected, noQuote, considered };
 }

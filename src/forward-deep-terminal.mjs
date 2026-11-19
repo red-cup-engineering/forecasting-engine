@@ -3,7 +3,7 @@
  * ask in [0.90, 0.985] and the game is terminal with slack <= -2 (NFL, NCAAF, MLB). Pure decision functions that turn
  * an ESPN scoreboard game (live) into the gameRegime input and a Kalshi market into an entry.
  */
-import { gameRegime } from './game-regime.mjs';
+import { gameMode } from './game-regime.mjs';
 import { num } from './forward-shadow.mjs';
 
 export const DT = { askLo: 0.90, askHi: 0.985, maxSlack: -2, maxSpread: 0.10, minGames: 60 };
@@ -28,12 +28,12 @@ export function liveState(sport, ev) {
     if (kind === 'top') half = 'top'; else if (kind.startsWith('bot')) half = 'bottom';
     else if (kind.startsWith('mid')) { half = 'bottom'; outs = 0; } else { half = 'top'; inning += 1; outs = 0; }
     if (outs >= 3) { if (half === 'top') half = 'bottom'; else { half = 'top'; inning += 1; } outs = 0; }
-    return { ...base, regime: gameRegime({ sport, inning, half, outs, margin: base.margin, trailerIsAway: trailer === 'away' }), detail: `${half} ${inning} ${outs} out` };
+    return { ...base, regime: gameMode({ sport, inning, half, outs, margin: base.margin, trailerIsAway: trailer === 'away' }), detail: `${half} ${inning} ${outs} out` };
   }
   const pos = c.situation?.possession != null ? String(c.situation.possession) : null;
   const hasBall = leader === null || pos === null ? undefined : pos === base.teamIds[trailer];
   const clockSec = Number.isFinite(c.status.clock) && c.status.clock > 0 ? c.status.clock : clockToSec(c.status.displayClock);
-  return { ...base, regime: gameRegime({ sport, period: c.status.period, clockSec, margin: base.margin, trailerHasBall: hasBall }), detail: `P${c.status.period} ${c.status.displayClock} ${hasBall === undefined ? 'ball?' : hasBall ? 'trailer ball' : 'leader ball'}` };
+  return { ...base, regime: gameMode({ sport, period: c.status.period, clockSec, margin: base.margin, trailerHasBall: hasBall }), detail: `P${c.status.period} ${c.status.displayClock} ${hasBall === undefined ? 'ball?' : hasBall ? 'trailer ball' : 'leader ball'}` };
 }
 
 /** Is the game in the pre-registered deep-terminal cell? Needs a leader, terminal, finite slack <= -2. */

@@ -36,7 +36,7 @@ export function splitHoldout(items, spec) {
  *   items (jackknifed here) or precomputed stats {n, groups, mean, se, t} (and a comparison difference)
  * @param {{now?: number}} [options]
  */
-export function readVerdict(h, data, { now = Date.now() } = {}) {
+export function readResult(h, data, { now = Date.now() } = {}) {
   const c = h.verdict, refuteK = c.refuteK ?? c.k, reasons = [];
   const items = data.items ?? null;
   const stats = data.stats ?? clusterStats(items ?? []);
@@ -73,8 +73,8 @@ export function readVerdict(h, data, { now = Date.now() } = {}) {
 }
 
 /** Next status from the current one and a verdict: transitions follow the reading, `admitted` is never taken. */
-export function nextStatus(current, verdict) {
+export function nextStatus(current, result) {
   if (current === 'killed' || current === 'admitted') return current;
-  if (verdict.status) return verdict.status;
+  if (result.status) return result.status;
   return current === 'passed' ? 'forward' : current;
 }

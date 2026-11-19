@@ -167,7 +167,7 @@ export const logLoss = (ps, ys) => ps.reduce((s, p, i) => { const q = Math.min(1
 /** Kalshi taker fee for an order of `count` contracts at price P (dollars): 0.07*count*P*(1-P), rounded up to the account's $0.0001 grid. */
 export const takerFee = (count, price) => orderFee(count, price);
 /** Fee per contract for orders of 10. */
-export const feePerContract = (price, lot = 10) => takerFee(lot, price) / lot;
+export const feePerContract = (price, job = 10) => takerFee(job, price) / job;
 
 /**
  * Decide and settle one market: buys the favoured side at its ask when edge (model prob minus ask) > thr.
