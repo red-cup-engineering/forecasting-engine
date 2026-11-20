@@ -1,10 +1,11 @@
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 /** Read-only reconstruction from immutable issuance snapshots and recorded physical outcomes. */
 import {readFile,readdir,realpath,mkdir,writeFile} from 'node:fs/promises';import {gunzipSync} from 'node:zlib';import {createHash} from 'node:crypto';import {execFileSync} from 'node:child_process';import {pathToFileURL} from 'node:url';
 const home=process.env.HOME,root=home+'/.local/state/561-group/settlements/kalshi-services-section/weather',runtime=await realpath(home+'/.local/share/561-group/weather-research/current'),scienceFile=execFileSync('find',[runtime+'/lib','-path','*/forecasting-service/src/station-weather-science.mjs'],{encoding:'utf8'}).trim(),F=scienceFile.slice(0,-'/src/station-weather-science.mjs'.length);
 const {stationPointForecasts}=await import(pathToFileURL(scienceFile)),{temperatureDiagnostics}=await import(pathToFileURL(F+'/src/weather-ensemble.mjs'));
 const cutoff=Date.parse('2026-10-07T12:27:34.857Z'),frames=new Map(),observations=new Map();let packets=0,verifiedHashes=0;
-const digest=b=>createHash('sha256').update(b).digest('hex');
-async function packet(id){const b=gunzipSync(await readFile(root+'/evidence/'+id+'.json.gz'));if(digest(b)!==id)throw new Error('archive digest mismatch: '+id);verifiedHashes++;return JSON.parse(b);}
+
+async function packet(id){const b=gunzipSync(await readFile(root+'/evidence/'+id+'.json.gz'));if(sha256Hex(b)!==id)throw new Error('archive digest mismatch: '+id);verifiedHashes++;return JSON.parse(b);}
 for(const name of await readdir(root+'/evidence')){
  if(!/^[a-f0-9]{64}\.json\.gz$/.test(name))continue;const e=await packet(name.slice(0,64));packets++;
  const forecasts=e.science?.forecasts??[],available=forecasts.map(r=>Date.parse(r.availableAt)).filter(Number.isFinite).sort((a,b)=>a-b)[0];

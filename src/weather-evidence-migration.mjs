@@ -1,3 +1,4 @@
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import { isEqual } from "@red-cup-engineering/signcell/values";
 /**
  * Migration of weather evidence archives to the tree forms of weather-evidence-record.mjs.
@@ -53,7 +54,7 @@ import {DERIVED_KIND,sealDerivedRecord,useEvidenceStore,sourceRefName,loadWeathe
 import {jsonDigest} from './weather-state-tree.mjs';
 
 const ID=/^([a-f0-9]{64})\.json\.gz$/u;
-const sha=text=>createHash('sha256').update(text).digest('hex');
+
 
 const BATCH=8;
 
@@ -180,13 +181,13 @@ export async function migrateWeatherEvidence({root,apply=false,log=()=>{}}={}){
     try{
       bytes=await readFileBytes(path);report.bytesBefore+=bytes.length;
       const text=gunzipSync(bytes);
-      if(sha(text)!==id){report.corrupt.push(id);continue;}
+      if(sha256Hex(text)!==id){report.corrupt.push(id);continue;}
       record=JSON.parse(text.toString('utf8'));
     }catch{report.corrupt.push(id);continue;}
     try{
       if(record&&record.science&&record.sourceEvidenceId&&record.kind===undefined){
         const {dailyExtremes,science,sourceEvidenceId,...input}=record;
-        if(sha(JSON.stringify(input))!==sourceEvidenceId)throw new Error('derived packet does not contain its source exactly');
+        if(sha256Hex(JSON.stringify(input))!==sourceEvidenceId)throw new Error('derived packet does not contain its source exactly');
         const sourceStaged=await stage(input);
         const run=science.at?hoistRun(science,science.at):{value:science,hoisted:false};
         const historical=await store.put(run.value);
@@ -219,12 +220,12 @@ async function migrateScores({root,apply}){
   const names=(await listFiles(dir)).map(f=>f.path);
   if(!names.length)return {files:0,bytes:0};
   const lines=new Set();
-  try{for await(const line of createInterface({input:createReadStream(join(root,'resolved.jsonl')),crlfDelay:Infinity}))if(line)lines.add(sha(line));}
+  try{for await(const line of createInterface({input:createReadStream(join(root,'resolved.jsonl')),crlfDelay:Infinity}))if(line)lines.add(sha256Hex(line));}
   catch(e){if(e.code!=='ENOENT')throw e;}
   let files=0,bytes=0;
   for(const name of names){
     const path=join(dir,name),text=(await readFileText(path)).replace(/\n$/u,'');
-    if(!lines.has(sha(text)))continue;
+    if(!lines.has(sha256Hex(text)))continue;
     files++;bytes+=Buffer.byteLength(text)+1;
     if(apply)await removeFile({path});
   }
