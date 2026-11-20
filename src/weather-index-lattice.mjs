@@ -47,7 +47,7 @@ export const GAUSS_HERMITE = Object.freeze((() => {
 })());
 
 /** Three-point Gauss-Hermite for E[f(Z)], Z ~ N(0,1): the volatility regimes. */
-const MODES = Object.freeze([{ z: -Math.sqrt(3), w: 1 / 6 }, { z: 0, w: 2 / 3 }, { z: Math.sqrt(3), w: 1 / 6 }]);
+const REGIMES = Object.freeze([{ z: -Math.sqrt(3), w: 1 / 6 }, { z: 0, w: 2 / 3 }, { z: Math.sqrt(3), w: 1 / 6 }]);
 
 /** A reading's resolution in degrees C: one-minute ASOS reports whole degrees, the METAR fallback tenths. */
 export const resolutionOf = (source) => (source === 'metar' ? 0.1 : 1);
@@ -118,21 +118,21 @@ export const latentMean = (state) => { let m = 0; for (let k = 0; k < POINTS; k 
  * about one in a hundred, not the Gaussian's never).
  * @returns {{min: number, pmf: Float64Array}} pmf[s - min] = P(sum of tenths = s)
  */
-export function sumDistribution(stations, { commonHorizon, sigmaCommon, sigmaStation, sigmaDrift = 0, tau, tauMetar = tau, scale = 1, regimeSpread: modeSpread = 0 }) {
+export function sumDistribution(stations, { commonHorizon, sigmaCommon, sigmaStation, sigmaDrift = 0, tau, tauMetar = tau, scale = 1, regimeSpread = 0 }) {
   const hc = Math.max(0, commonHorizon);
   // Sums are kept in units of `base` tenths: whole degrees when every station reads whole degrees.
   const base = stations.every(({ resolution }) => resolution >= 1) ? 10 : 1;
   let total = null, totalMin = 0;
-  const modes = modeSpread > 0 ? MODES : [{ z: 0, w: 1 }];
-  for (const mode of modes) {
-  const level = scale * Math.exp(modeSpread * mode.z), sc = sigmaCommon * level, ss = sigmaStation * level;
+  const regimes = regimeSpread > 0 ? REGIMES : [{ z: 0, w: 1 }];
+  for (const regime of regimes) {
+  const level = scale * Math.exp(regimeSpread * regime.z), sc = sigmaCommon * level, ss = sigmaStation * level;
   const common = Math.sqrt(sc * sc * hc + sigmaDrift * sigmaDrift * hc * hc);
   const owns = stations.map(({ horizon, resolution }) => {
     const h = Math.max(0, horizon), noise = resolution < 1 ? tauMetar : tau;
     return Math.sqrt(ss * ss * h + sc * sc * Math.max(0, h - hc) + noise * noise);
   });
   for (const { z, w: shockWeight } of GAUSS_HERMITE) {
-    const w = shockWeight * mode.w;
+    const w = shockWeight * regime.w;
     let pmf = Float64Array.of(1), min = 0;
     for (let i = 0; i < stations.length; i += 1) {
       const { state, shift = 0, resolution } = stations[i], sd = owns[i], unit = Math.round(resolution * 10) / base;
@@ -305,7 +305,7 @@ export function driftCoefficients(drift, h) {
  * @param {object[]} calibrations the city's published calibrations (live_data/weather/{city}/calibrations)
  */
 export function createIndexTracker({ params, climate, climateVariance = null, localHour, calibrations, guidance = null }) {
-  const { sigmaCommon, sigmaStation, sigmaDrift = 0, tau, tauMetar = tau, trendMinutes, climateHalfLifeDays, drift, volatilityPersistence = 0, regimeSpread: modeSpread = 0 } = params;
+  const { sigmaCommon, sigmaStation, sigmaDrift = 0, tau, tauMetar = tau, trendMinutes, climateHalfLifeDays, drift, volatilityPersistence = 0, regimeSpread = 0 } = params;
   const predictors = createDriftPredictors({ climate, climateVariance, localHour, trendMinutes, climateHalfLifeDays, guidance });
   // The latent motion's scale over h minutes from t: the hour's level, times recent over usual to a fitted power.
   const scaleOf = (t, h) => { const v = predictors.volatility(t, h); return v.diurnal * Math.pow(Math.min(3, Math.max(1 / 3, v.recent)), volatilityPersistence); };
@@ -351,7 +351,7 @@ export function createIndexTracker({ params, climate, climateVariance = null, lo
         return { state: s.filter, horizon, shift: shiftOf(id, s.last, horizon), resolution: resolutionOf(s.source) };
       });
       const commonHorizon = Math.max(0, (target - latest) / MINUTE);
-      const sum = sumDistribution(inputs, { commonHorizon, sigmaCommon, sigmaStation, sigmaDrift, tau, tauMetar, scale: scaleOf(latest, Math.max(1, commonHorizon)), regimeSpread: modeSpread });
+      const sum = sumDistribution(inputs, { commonHorizon, sigmaCommon, sigmaStation, sigmaDrift, tau, tauMetar, scale: scaleOf(latest, Math.max(1, commonHorizon)), regimeSpread });
       const value = indexLawAt.valueOf(accepted), out = [];
       for (let k = 0; k < sum.pmf.length; k += 1) if (sum.pmf[k] > 0) out.push({ value: value(sum.min + k), p: sum.pmf[k] });
       return out;

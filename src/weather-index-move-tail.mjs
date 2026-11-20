@@ -141,9 +141,9 @@ export function regimeIndex(cuts, variation) {
   return i === -1 ? cuts.length : i;
 }
 
-const cutsOf = (variations, modes) => {
+const cutsOf = (variations, regimes) => {
   const sorted = variations.filter((v) => v !== null).sort((a, b) => a - b);
-  return Array.from({ length: modes - 1 }, (_, i) => rank(sorted, (i + 1) / modes));
+  return Array.from({ length: regimes - 1 }, (_, i) => rank(sorted, (i + 1) / regimes));
 };
 
 /** Pinball (quantile) loss of predicting quantile q by `prediction` for observations `values`. */
@@ -156,20 +156,20 @@ const pinball = (values, prediction, q) => values.reduce((s, y) => s + (y >= pre
  */
 export function chooseRegimes(anchorsByHorizon, { holdOutFraction = P('holdOutFraction') } = {}) {
   const scores = {};
-  for (const modes of P('regimeCandidates')) {
+  for (const regimes of P('regimeCandidates')) {
     let total = 0;
     for (const anchors of anchorsByHorizon) {
       const cut = Math.floor(anchors.length * (1 - holdOutFraction)), train = anchors.slice(0, cut), test = anchors.slice(cut);
-      if (train.length < P('minimumAnchors') * modes || test.length < P('minimumAnchors')) continue;
-      const cuts = cutsOf(train.map((a) => a.variation), modes);
-      for (let r = 0; r < modes; r += 1) {
+      if (train.length < P('minimumAnchors') * regimes || test.length < P('minimumAnchors')) continue;
+      const cuts = cutsOf(train.map((a) => a.variation), regimes);
+      for (let r = 0; r < regimes; r += 1) {
         const inTrain = train.filter((a) => regimeIndex(cuts, a.variation) === r).map((a) => Math.abs(a.move)).sort((x, y) => x - y);
         const inTest = test.filter((a) => regimeIndex(cuts, a.variation) === r).map((a) => Math.abs(a.move));
         if (inTrain.length < P('minimumAnchors') || !inTest.length) continue;
         for (const q of P('regimeQuantiles')) total += (inTest.length / test.length) * pinball(inTest, rank(inTrain, q), q);
       }
     }
-    scores[modes] = total;
+    scores[regimes] = total;
   }
   const best = Object.entries(scores).sort((a, b) => a[1] - b[1] || a[0] - b[0])[0];
   return { regimes: Number(best[0]), scores };
@@ -182,7 +182,7 @@ export function chooseRegimes(anchorsByHorizon, { holdOutFraction = P('holdOutFr
  * @returns the table: `{cuts, regimes, blockMinutes, anchors, strata: {"<dir>|<h>|<regime>": {n, u, xi, sigma, point: number[], upper: number[]}}}`
  *   point[i] and upper[i] are the distances (F) at epsilons[i]: the estimate and its (1 - alpha) upper confidence bound.
  */
-export function fitMoveTable(minutes, { horizons = HORIZONS, epsilons = EPSILONS, resamples = P('resamples'), alpha = P('confidence'), seed = 1, regimes: forcedModes = null } = {}) {
+export function fitMoveTable(minutes, { horizons = HORIZONS, epsilons = EPSILONS, resamples = P('resamples'), alpha = P('confidence'), seed = 1, regimes: forcedRegimes = null } = {}) {
   const times = [...minutes.keys()].sort((a, b) => a - b);
   const vi = variationIndex(times, minutes);
   const anchorsByHorizon = horizons.map((h) => {
@@ -196,7 +196,7 @@ export function fitMoveTable(minutes, { horizons = HORIZONS, epsilons = EPSILONS
     }
     return anchors;
   });
-  const chosen = forcedModes === null ? chooseRegimes(anchorsByHorizon) : { regimes: forcedModes, scores: null };
+  const chosen = forcedRegimes === null ? chooseRegimes(anchorsByHorizon) : { regimes: forcedRegimes, scores: null };
   // block length: the autocorrelation time of the exceedances of the (1 - alpha) quantile of the middle horizon's falls, and at least the longest horizon
   const reference = anchorsByHorizon[Math.floor(horizons.length / 2)] ?? [];
   const falls = reference.map((a) => Math.max(0, -a.move)), threshold = falls.length ? rank([...falls].sort((x, y) => x - y), 1 - alpha) : 0;
@@ -208,16 +208,16 @@ export function fitMoveTable(minutes, { horizons = HORIZONS, epsilons = EPSILONS
     const anchors = anchorsByHorizon[hi];
     const horizonCuts = cutsOf(anchors.map((a) => a.variation), chosen.regimes);
     cuts[h] = horizonCuts;
-    for (let mode = 0; mode < chosen.regimes; mode += 1) {
-      const inMode = anchors.filter((a) => regimeIndex(horizonCuts, a.variation) === mode);
-      if (inMode.length < P('minimumAnchors')) continue;
+    for (let regime = 0; regime < chosen.regimes; regime += 1) {
+      const inRegime = anchors.filter((a) => regimeIndex(horizonCuts, a.variation) === regime);
+      if (inRegime.length < P('minimumAnchors')) continue;
       for (const direction of ['rise', 'fall']) {
-        const moves = inMode.map((a) => ({ block: blockOf(a.t), x: direction === 'rise' ? Math.max(0, a.move) : Math.max(0, -a.move) }));
+        const moves = inRegime.map((a) => ({ block: blockOf(a.t), x: direction === 'rise' ? Math.max(0, a.move) : Math.max(0, -a.move) }));
         const movesDesc = moves.map((m) => m.x).sort((a, b) => b - a);
-        const model = stratumModel(movesDesc, inMode.length);
+        const model = stratumModel(movesDesc, inRegime.length);
         const point = epsilons.map((e) => inverseSurvival(model, e));
         // moving-block bootstrap: resample the blocks with replacement, refit, invert. Only the largest moves reach the tail.
-        const keep = Math.min(movesDesc.length, P('tailKeepFactor') * Math.ceil(inMode.length ** P('tailRoot'))), floor = movesDesc[keep - 1] ?? 0;
+        const keep = Math.min(movesDesc.length, P('tailKeepFactor') * Math.ceil(inRegime.length ** P('tailRoot'))), floor = movesDesc[keep - 1] ?? 0;
         const sizes = new Map(), tops = new Map();
         for (const m of moves) {
           sizes.set(m.block, (sizes.get(m.block) ?? 0) + 1);
@@ -233,7 +233,7 @@ export function fitMoveTable(minutes, { horizons = HORIZONS, epsilons = EPSILONS
         // a percentile bootstrap can fall below the estimate in the far tail; the bound is never below it, and never shrinks as the probability does
         const upper = [];
         epsilons.forEach((_, i) => upper.push(Math.max(point[i], upper.at(-1) ?? 0, rank(draws.map((d) => d[i]).sort((x, y) => x - y), 1 - alpha))));
-        strata[`${direction}|${h}|${mode}`] = { n: inMode.length, u: model.u, xi: model.xi, sigma: model.sigma, point, upper };
+        strata[`${direction}|${h}|${regime}`] = { n: inRegime.length, u: model.u, xi: model.xi, sigma: model.sigma, point, upper };
       }
     }
   });

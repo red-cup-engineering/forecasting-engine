@@ -72,18 +72,18 @@ for (const S of ["S1", "S2"]) {
     for (const [id] of lag0) modes.push([`loo`, solve(new Set([id])), id]);
     for (const [mode, { a, inference }, only] of modes) {
       const targetsIds = mode === "thin" ? thin : new Set([only]);
-      let omitted = 0, available = 0;
+      let withheld = 0, available = 0;
       const xh = inference.values;
       for (const id of targetsIds) {
         const z = V.get(id), o = a.sheaf.offset.get(id);
         // A weakly connected but gauge-ambiguous stalk is still NOT an
         // identified market estimate. Retain identifiable other components.
         if (!inference.identified[o] || !inference.identified[o + 1]) {
-          omitted++;
+          withheld++;
           continue;
         }
         const deg = a.sheaf.edges.filter((e) => e.u === id || e.v === id).length;
-        if (!deg) { omitted++; continue; }
+        if (!deg) { withheld++; continue; }
         available++;
         const mu = z.c + xh[o], sg = Math.exp(xh[o + 1] + base.get(`${z.station}.${z.kind}`));
         for (const b of z.ladder.brackets) {
@@ -97,7 +97,7 @@ for (const S of ["S1", "S2"]) {
         }
       }
       inferenceCoverage.push({S, day:dayISO(d), split:split_, mode, target:only ?? null,
-        available,withheld: omitted,freeCount:inference.freeCount,
+        available,withheld,freeCount:inference.freeCount,
         identifiedFreeCount:inference.identifiedFreeCount,
         unresolvedNullity:inference.unresolvedNullity});
     }

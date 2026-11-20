@@ -118,14 +118,14 @@ export function pnlOf(position) {
 
 /** Play a strategy against a recorded tape of Opponent/nature moves: after each `rfq` the strategy is
  *  asked, and its quote (if any) is admitted next. Returns the whole play, the position, its hash. */
-export function playStrategy(log, strategy, seed) {
+export function playStrategy(tape, strategy, seed) {
   let position = comboArena.initialPosition(seed); const moves = [];
-  const validate = (m) => { position = comboArena.extend(position, m).state; moves.push(m); };
-  for (const m of log) {
-    validate(m);
+  const admit = (m) => { position = comboArena.extend(position, m).state; moves.push(m); };
+  for (const m of tape) {
+    admit(m);
     if (m.kind !== 'rfq') continue;
     const q = strategy(position, { id: m.id, ...position.rfqs[m.id] });
-    if (q) validate(q);
+    if (q) admit(q);
   }
   return { moves, position, positionHash: hashPosition(comboArena.serialize(position)) };
 }
@@ -162,7 +162,7 @@ const quotedBook = (position) => Object.keys(position.quotes).filter((id) => pos
  * Frame 5 (coordination-free admission): wrap a strategy so it quotes only when the quote keeps the
  * book's nerve at most `maxH1` cycles, i.e. a forest by default. A refused rfq is passed, not quoted.
  */
-export const forestValidation = (strategy, { maxH1 = 0 } = {}) => (position, rfq) => {
+export const forestAdmission = (strategy, { maxH1 = 0 } = {}) => (position, rfq) => {
   const move = strategy(position, rfq);
   if (!move) return null;
   return exposureNerve([...quotedBook(position), { id: rfq.id, legs: rfq.legs }]).h1 <= maxH1 ? move : null;

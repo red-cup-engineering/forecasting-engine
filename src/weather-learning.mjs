@@ -39,9 +39,9 @@ export function createModelGradeAccumulator() {
       // A one-date comparison cannot estimate date-to-date uncertainty. Beyond
       // that mathematical requirement, measured uncertainty owns admission; no
       // arbitrary date count can override a positive lower confidence bound.
-      const validated=Number.isFinite(lower)&&lower>0;
-      const weight=validated?Math.min(1,lower/mean):0;
-      report[key]={version:2,dates:n,events:g.events.size,brierImprovement:mean,improvementLower95:lower,admitted: validated,weight,admission:'positive date-clustered one-sided 95% Brier improvement; weight lower/mean',bins};
+      const admitted=Number.isFinite(lower)&&lower>0;
+      const weight=admitted?Math.min(1,lower/mean):0;
+      report[key]={version:2,dates:n,events:g.events.size,brierImprovement:mean,improvementLower95:lower,admitted,weight,admission:'positive date-clustered one-sided 95% Brier improvement; weight lower/mean',bins};
     }
     return report;
   }

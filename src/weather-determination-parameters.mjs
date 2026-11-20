@@ -7,7 +7,7 @@
  * The models take their numbers from here; test/determination-parameters.test.mjs fails on a numeric literal in them that is not here,
  * a unit, or an index.
  */
-export const parameter = (value, kind, origin, extra = {}) => Object.freeze({ value, kind, provenance: origin, ...extra });
+export const parameter = (value, kind, provenance, extra = {}) => Object.freeze({ value, kind, provenance, ...extra });
 
 export const SHARED = Object.freeze({
   confidence: parameter(0.05, 'convention', 'one-sided 95%: Clopper and Pearson 1934; Efron and Tibshirani 1993 section 13. Results are reported at 0.01 and 0.10 beside it'),

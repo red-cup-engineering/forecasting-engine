@@ -24,7 +24,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } fr
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { SPORTS, matchGames, normalizeScoreboard, sideMatches } from '../src/sport-feeds.mjs';
-import { gameMode } from '../src/game-regime.mjs';
+import { gameRegime } from '../src/game-regime.mjs';
 
 const arg = (name, dflt) => { const i = process.argv.indexOf(`--${name}`); return i > 0 ? process.argv[i + 1] : dflt; };
 const flag = (name) => process.argv.includes(`--${name}`);
@@ -99,13 +99,13 @@ function stateAt(tl, tMs) { // latest entry with t <= tMs
   while (lo <= hi) { const mid = (lo + hi) >> 1; if (tl[mid].t <= tMs) { ans = mid; lo = mid + 1; } else hi = mid - 1; }
   return ans < 0 ? null : tl[ans];
 }
-function modeOfState(sport, st, ids) {
+function regimeOfState(sport, st, ids) {
   const diff = st.home - st.away; const margin = Math.abs(diff);
   const leader = diff === 0 ? null : diff > 0 ? 'home' : 'away';
   const trailer = leader === 'home' ? 'away' : 'home';
-  if (sport === 'mlb') return { leader, ...gameMode({ sport, inning: st.inning, half: st.half, outs: st.outs, margin, trailerIsAway: trailer === 'away' }) };
+  if (sport === 'mlb') return { leader, ...gameRegime({ sport, inning: st.inning, half: st.half, outs: st.outs, margin, trailerIsAway: trailer === 'away' }) };
   const posSide = st.pos === ids.home ? 'home' : st.pos === ids.away ? 'away' : null;
-  return { leader, ...gameMode({ sport, period: st.period, clockSec: st.sec, margin, trailerHasBall: leader === null || posSide === null ? undefined : posSide === trailer }) };
+  return { leader, ...gameRegime({ sport, period: st.period, clockSec: st.sec, margin, trailerHasBall: leader === null || posSide === null ? undefined : posSide === trailer }) };
 }
 
 // ---------- collection ----------
@@ -169,7 +169,7 @@ async function collect() {
           if (!(q.bid > 0 && q.ask < 1 && q.ask >= q.bid && q.ask - q.bid <= 0.1)) continue;
           const yesMid = (q.bid + q.ask) / 2; const favYes = yesMid >= 0.5;
           const fb = favYes ? q.bid : 1 - q.ask; const fa = favYes ? q.ask : 1 - q.bid;
-          const r = modeOfState(key, s, ids); const favSide = favYes === yesHome ? 'home' : 'away';
+          const r = regimeOfState(key, s, ids); const favSide = favYes === yesHome ? 'home' : 'away';
           rows.push({ g: gid, sport: key, ticker: market.ticker, T, bid: fb, ask: fa, mid: (fb + fa) / 2, real: favYes ? settle : 1 - settle, regime: r.regime, slack: r.slack, favLeads: r.leader === null ? null : r.leader === favSide, mult });
         }
         if (rows.length) { appendFileSync(ROWS, rows.map((r) => JSON.stringify(r)).join('\n') + '\n'); st.used++; }
@@ -183,7 +183,7 @@ async function collect() {
 // ---------- analysis ----------
 const BANDS = [[0.5, 0.8], [0.8, 0.9], [0.9, 0.95], [0.95, 0.97], [0.97, 0.99], [0.99, 1.0001]];
 const bandName = (b) => `${b[0].toFixed(2)}-${b[1] > 1 ? '1.00' : b[1].toFixed(2)}`;
-const MODES = ['early', 'contested', 'terminal'];
+const REGIMES = ['early', 'contested', 'terminal'];
 
 /** mean of x with delete-one-group jackknife SE. items: [{g, x}] */
 export function jackMean(items) {
@@ -203,14 +203,14 @@ export function analyse(rows) {
   for (const [gname, pred] of Object.entries(groups)) {
     const rs = rows.filter(pred); report.counts[gname] = { minutes: rs.length, games: new Set(rs.map((r) => r.g)).size };
     report.calibration[gname] = [];
-    for (const b of BANDS) for (const reg of [...MODES, 'all']) {
+    for (const b of BANDS) for (const reg of [...REGIMES, 'all']) {
       const cell = rs.filter((r) => r.mid >= b[0] && r.mid < b[1] && (reg === 'all' || r.regime === reg));
       const j = jackMean(cell.map((r) => ({ g: r.g, x: r.real - r.mid })));
       report.calibration[gname].push({ band: bandName(b), regime: reg, ...j, mid: cell.length ? cell.reduce((a, r) => a + r.mid, 0) / cell.length : NaN });
     }
     // trading rule: first qualifying minute per game per regime
     const byGame = new Map(); for (const r of rs) { if (!byGame.has(r.g)) byGame.set(r.g, []); byGame.get(r.g).push(r); }
-    const variants = { baseline: (r) => true, ...Object.fromEntries(MODES.map((x) => [x, (r) => r.regime === x])), 'terminal&favLeads': (r) => r.regime === 'terminal' && r.favLeads === true, 'terminal&favTrails': (r) => r.regime === 'terminal' && r.favLeads === false, 'terminal-slack-1': (r) => r.regime === 'terminal' && r.slack === -1, 'terminal-deep(slack<=-2)': (r) => r.regime === 'terminal' && r.slack <= -2, 'not-terminal': (r) => r.regime !== 'terminal' };
+    const variants = { baseline: (r) => true, ...Object.fromEntries(REGIMES.map((x) => [x, (r) => r.regime === x])), 'terminal&favLeads': (r) => r.regime === 'terminal' && r.favLeads === true, 'terminal&favTrails': (r) => r.regime === 'terminal' && r.favLeads === false, 'terminal-slack-1': (r) => r.regime === 'terminal' && r.slack === -1, 'terminal-deep(slack<=-2)': (r) => r.regime === 'terminal' && r.slack <= -2, 'not-terminal': (r) => r.regime !== 'terminal' };
     report.trading[gname] = {};
     for (const [vname, vp] of Object.entries(variants)) {
       const trades = [];

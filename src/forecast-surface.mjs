@@ -56,20 +56,20 @@ export function fuseForecast({ mid, models }) {
     low = Math.max(low, s.low); high = Math.min(high, s.high); structural.push(model.id);
   }
   if (low > high) return null;
-  const validated = models.filter((m) => m.band?.admitted && Number.isFinite(m.p) && !structuralBounds(m)
+  const admitted = models.filter((m) => m.band?.admitted && Number.isFinite(m.p) && !structuralBounds(m)
     && (m.band.weight===undefined||Number.isFinite(m.band.weight)&&m.band.weight>0&&m.band.weight<=1));
   const market = Number.isFinite(mid) ? [mid] : [];
-  if (!market.length && !validated.length && !structural.length) return null;
-  const weights=[...market.map(()=>1),...validated.map(m=>m.band.weight??1)];
-  const point = market.length || validated.length ? pool([...market, ...validated.map((m) => m.p)],weights) : (low + high) / 2;
+  if (!market.length && !admitted.length && !structural.length) return null;
+  const weights=[...market.map(()=>1),...admitted.map(m=>m.band.weight??1)];
+  const point = market.length || admitted.length ? pool([...market, ...admitted.map((m) => m.p)],weights) : (low + high) / 2;
   const p = Math.min(high, Math.max(low, point));
   // The statistical band: each admitted model contributes its calibration band, the market its point.
-  const bandLow = validated.length ? pool([...market, ...validated.map((m) => m.band.low)],weights) : p;
-  const bandHigh = validated.length ? pool([...market, ...validated.map((m) => m.band.high)],weights) : p;
+  const bandLow = admitted.length ? pool([...market, ...admitted.map((m) => m.band.low)],weights) : p;
+  const bandHigh = admitted.length ? pool([...market, ...admitted.map((m) => m.band.high)],weights) : p;
   return {
     p, low: Math.max(low, Math.min(p, bandLow)), high: Math.min(high, Math.max(p, bandHigh)),
-    capitalWeight:validated.length?Math.max(...validated.map(m=>m.band.weight??1)):1,
-    mid: market[0] ?? null, admitted: validated.map((m) => m.id), structural,
+    capitalWeight:admitted.length?Math.max(...admitted.map(m=>m.band.weight??1)):1,
+    mid: market[0] ?? null, admitted: admitted.map((m) => m.id), structural,
   };
 }
 

@@ -87,8 +87,8 @@ function observationDate(value, targetDate) {
 export async function readNoaaCoopsWaterLevel(request, {
   fetchImpl = fetch, now = () => new Date().toISOString(),
 } = {}) {
-  const validated = admitNoaaCoopsWaterLevel(request);
-  const url = coopsWaterLevelUrl(validated);
+  const admitted = admitNoaaCoopsWaterLevel(request);
+  const url = coopsWaterLevelUrl(admitted);
   const signal = AbortSignal.timeout(12000);
   const response = await fetchImpl(url, {
     method: "GET", headers: { accept: "application/json" },
@@ -106,12 +106,12 @@ export async function readNoaaCoopsWaterLevel(request, {
   let original;
   try { original = JSON.parse(text); } catch { throw new TypeError("CO-OPS returned non-JSON source bytes"); }
   if (original === null || typeof original !== "object" || Array.isArray(original) ||
-      original.error !== undefined || String(original.metadata?.id) !== validated.station ||
+      original.error !== undefined || String(original.metadata?.id) !== admitted.station ||
       !Array.isArray(original.data) || original.data.length === 0 ||
       original.data.length > 300) {
     throw new Error("CO-OPS source has no admissible station-matched observed levels");
   }
-  const day = calendarDate(validated.date);
+  const day = calendarDate(admitted.date);
   // NOAA may retain a timestamp with an explicitly missing measurement.
   // Treat the finite observed values as readings, and keep the count of
   // gaps instead of rejecting an otherwise useful day or inventing zero.
@@ -150,8 +150,8 @@ export async function readNoaaCoopsWaterLevel(request, {
   }
   const delivered = {
     kind: "noaa-coops-water-level-day/v1",
-    station: validated.station, date: validated.date,
-    product: "water_level", datum: validated.datum ?? "MLLW", unit: "metre", timeZone: "GMT",
+    station: admitted.station, date: admitted.date,
+    product: "water_level", datum: admitted.datum ?? "MLLW", unit: "metre", timeZone: "GMT",
     measurementState: "source-reported-possibly-preliminary",
     coverage: { reportedSamples: original.data.length, finiteSamples: observations.length, missingSamples: missingObservations,
       meaning: "NOAA missing measurement values withheld, never zero-filled or interpolated" },

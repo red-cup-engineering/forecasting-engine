@@ -12,7 +12,7 @@ const conflictBin=(reading,t)=>reading.conflicts.some(c=>c.witnesses.some(r=>{co
 export function prospectiveRelationalForecasts(training,reading,{region,now=Date.now()}={}){
  const stations=RELATIONAL_REGIONS[region];if(!stations||!Number.isFinite(now)||Date.parse(training.generatedAt)>now)throw new TypeError('received frozen training and current clock required');
  const before=Math.floor(now/DAY)*DAY;if(Date.parse(training.before)!==before)return {forecasts:[],gaps:[{region,reason:'frozen training day does not match issuance day'}]};
- const validated={...reading,accepted:reading.accepted.filter(r=>Date.parse(r.availableAt)<=now&&Date.parse(r.observedAt)<=now)},panel=new Map(relationalTemperaturePanel(validated,{stations}).map(p=>[p.at,p.stations]));
+ const admitted={...reading,accepted:reading.accepted.filter(r=>Date.parse(r.availableAt)<=now&&Date.parse(r.observedAt)<=now)},panel=new Map(relationalTemperaturePanel(admitted,{stations}).map(p=>[p.at,p.stations]));
  const boundaries=[...panel.keys()].sort((a,b)=>b-a),t=boundaries.find(t=>t>=now-HOUR&&t<=now+20*60000&&t+HOUR-20*60000>now+5000&&[t,t-HOUR,t-2*HOUR].every(b=>!conflictBin(reading,b)&&stations.every(s=>panel.get(b)?.[s])));
  
  const forecasts=[],gaps=[];

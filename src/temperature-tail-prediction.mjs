@@ -66,7 +66,7 @@ export function predictTemperatureTail(market, { guidance, observed = null, haza
   if (!(priced.probability <= maxP)) return { eligible: false, reason: `model p ${priced.probability.toFixed(4)} above the ${maxP} tail threshold`, priced };
   const side = tailSide(market, priced.mean);
   if (!side) return { eligible: false, reason: 'bracket straddles the forecast mean', priced };
-  const mode = regimeVerdict(side, hazards);
-  if (!mode.ok) return { eligible: false, reason: mode.reason, ...(mode.unread ? { unread: true } : {}), priced };
+  const regime = regimeVerdict(side, hazards);
+  if (!regime.ok) return { eligible: false, reason: regime.reason, ...(regime.unread ? { unread: true } : {}), priced };
   return { eligible: true, probability: priced.probability, lossRate: tailLossRate(priced.probability,priced.kind,posteriors?.[priced.kind]?posteriors:rules.lossRatePosterior), side, priced };
 }

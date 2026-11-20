@@ -223,7 +223,7 @@ export function partiallyIdentifiedHarmonicExtension(
   const rhs = F.map(i => -sheaf.L[i].reduce((sum, a, j) =>
     sum + (free[j] ? 0 : a * x[j]), 0));
   const hessian = F.map(i => F.map(j => sheaf.L[i][j]));
-  const values = x.slice(),identified = free.map(f => !f),omitted = [];
+  const values = x.slice(),identified = free.map(f => !f),withheld = [];
   const seen = new Set();
   let unresolvedNullity = 0, nullityKnown = true;
 
@@ -289,7 +289,7 @@ export function partiallyIdentifiedHarmonicExtension(
       if (unknownLocal.includes(i) || blockValues === null ||
           !Number.isFinite(blockValues[i])) {
         values[coord] = null;
-        omitted.push(coord);
+        withheld.push(coord);
       } else {
         values[coord] = blockValues[i];
         identified[coord] = true;
@@ -298,11 +298,11 @@ export function partiallyIdentifiedHarmonicExtension(
   }
   return {
     kind: 'identified-cellular-sheaf-extension-v1',
-    status: omitted.length ? 'partially-identified' : 'fully-identified',
+    status: withheld.length ? 'partially-identified' : 'fully-identified',
     values, identified,
-    withheldCoordinates: omitted.sort((a, b) => a - b),
+    withheldCoordinates: withheld.sort((a, b) => a - b),
     freeCount: F.length,
-    identifiedFreeCount: F.length - omitted.length,
+    identifiedFreeCount: F.length - withheld.length,
     unresolvedNullity: nullityKnown ? unresolvedNullity : null,
     numericalLimitations: nullityKnown ? [] :
       ['oversized singular sheaf blocks withheld without spectral interpolation'],

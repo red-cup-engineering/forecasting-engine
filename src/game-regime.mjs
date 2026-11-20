@@ -51,7 +51,7 @@ export function baseballTrailerOuts(inning, half, outs, trailerIsAway) {
  *   mlb: inning, half ('top'|'bottom'), outs, trailerIsAway }
  * @returns {{regime: 'terminal'|'contested'|'early', needed: number, available: number, slack: number}}
  */
-export function gameMode(s) {
+export function gameRegime(s) {
   const margin = Math.max(0, Number(s.margin) || 0);
   if (FOOTBALL.has(s.sport)) {
     const sec = footballSecondsLeft(s.period, s.clockSec);
@@ -71,6 +71,6 @@ export function gameMode(s) {
 function label(needed, available, early) {
   const slack = available - needed;
   // a tied game has needed 0: never terminal (slack >= 0 unless no time is left at all)
-  const mode = needed > available ? 'terminal' : early ? 'early' : 'contested';
-  return { regime: mode, needed, available, slack };
+  const regime = needed > available ? 'terminal' : early ? 'early' : 'contested';
+  return { regime, needed, available, slack };
 }
