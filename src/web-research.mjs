@@ -1,3 +1,4 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Keyless web evidence for the forecasting bot: Google News RSS (headlines, date-filterable with after:/before:),
  * GDELT DOC 2.0 (real article URLs, date-filterable, one request per 5 s), and plain page fetch. Every request
@@ -16,7 +17,7 @@ const stripTags = (s) => decode(s.replace(/<[^>]*>/gu, " ")).replace(/\s+/gu, " 
 const day = (d) => new Date(d).toISOString().slice(0, 10);
 
 let lastGdelt = 0;
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
 
 async function get(url, { fetchImpl = globalThis.fetch, accept = "*/*", timeoutMs = 20_000 } = {}) {
   const response = await fetchImpl(url, { headers: { "User-Agent": USER_AGENT, Accept: accept }, signal: AbortSignal.timeout(timeoutMs), redirect: "follow" });
@@ -46,7 +47,7 @@ export async function searchGoogleNews(query, { after = null, before = null, lim
 /** GDELT DOC 2.0 article list -> [{title, source, link, publishedAt}]. Honors GDELT's one-request-per-5-seconds rule. */
 export async function searchGdelt(query, { after = null, before = null, limit = 6, fetchImpl } = {}) {
   const gap = lastGdelt + 5200 - Date.now();
-  if (gap > 0) await wait(gap);
+  if (gap > 0) await sleep(gap);
   lastGdelt = Date.now();
   const stamp = (d) => new Date(d).toISOString().replace(/[-:T]/gu, "").slice(0, 14);
   const params = new URLSearchParams({ query, mode: "artlist", maxrecords: String(limit), format: "json", sort: "hybridrel" });

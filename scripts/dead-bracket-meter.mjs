@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Dead-bracket meter: how much Kalshi daily-temperature volume trades on brackets the station's own
  * observations have already ruled out, and which observation rule is safe to call a bracket dead.
@@ -24,15 +25,15 @@ const arg = (name, fallback) => { const i = process.argv.indexOf(`--${name}`); r
 const DAYS = Number(arg('days', 6));
 const LAGS = [0, 2, 5, 10, 15, 30];
 const ONLY = arg('series', null)?.split(',');
-const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+
 const MONTHS = { JAN: '01', FEB: '02', MAR: '03', APR: '04', MAY: '05', JUN: '06', JUL: '07', AUG: '08', SEP: '09', OCT: '10', NOV: '11', DEC: '12' };
 const eventDate = (t) => { const m = /-(\d{2})([A-Z]{3})(\d{2})$/u.exec(t); return m ? `20${m[1]}-${MONTHS[m[2]]}-${m[3]}` : null; };
 
 async function get(path) {
   for (let attempt = 0; attempt < 6; attempt += 1) {
-    await pause(130);
+    await sleep(130);
     const res = await fetch(`${API}${path}`, { headers: { accept: 'application/json' } });
-    if (res.status === 429) { await pause(1000 * 2 ** attempt); continue; }
+    if (res.status === 429) { await sleep(1000 * 2 ** attempt); continue; }
     if (!res.ok) throw new Error(`${path}: ${res.status}`);
     return res.json();
   }

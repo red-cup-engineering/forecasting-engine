@@ -1,7 +1,8 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Last 12h of public tape for the collector's universe (gives each book snapshot a trailing-6h taker-volume covariate).
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { makeClient, sleep, tradesFor, slimTrade, dataDir } from './lib.mjs';
+import { makeClient, tradesFor, slimTrade, dataDir } from "./lib.mjs";
 const c = makeClient();
 const st = JSON.parse(readFileSync(join(dataDir, 'collect-state.json'), 'utf8'));
 const minTs = Math.floor(Date.now() / 1000) - 12 * 3600;

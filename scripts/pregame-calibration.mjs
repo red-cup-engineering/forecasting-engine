@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Pre-game calibration of Kalshi game-winner markets. Read-only public data. Usage:
 //   node pregame-calibration.mjs enumerate   (stage 1: list settled markets per series)
 //   node pregame-calibration.mjs candles     (stage 2: fetch candles at start-60/start-5)
@@ -10,7 +11,7 @@ const B = "https://api.elections.kalshi.com/trade-api/v2";
 const CACHE = process.env.CACHE || "/tmp/claude-1000/-home-emsenn-info/bfd39b66-66a8-4bd1-abf7-8a75503c9632/scratchpad/pregame-cache";
 fs.mkdirSync(CACHE, { recursive: true });
 const MIN_TS = Date.parse("2026-07-01T00:00:00Z") / 1000, MAX_TS = Date.parse("2026-10-07T00:00:00Z") / 1000;
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 let last = 0, consec429 = 0, gap = 420;
 export async function get(url) {
   for (;;) {

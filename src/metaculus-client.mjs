@@ -1,3 +1,4 @@
+import * as argv from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Metaculus API client for the FutureEval / MiniBench bot tournaments.
  *
@@ -36,7 +37,7 @@ export class MetaculusTokenAbsentError extends Error {
   }
 }
 
-const sleepMs = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const isoOrNull = (value) => {
   if (value === null || value === undefined) return null;
   const ms = typeof value === "number" ? (value > 1e11 ? value : value * 1000) : Date.parse(value);
@@ -122,7 +123,7 @@ export function createMetaculusClient({
   userAgent = USER_AGENT,
   minIntervalMs = 1000,
   retries = 3,
-  sleep = sleepMs,
+  sleep = argv.sleep,
   now = () => Date.now(),
 } = {}) {
   let last = 0;

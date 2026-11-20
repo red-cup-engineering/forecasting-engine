@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Resumable batch runner for the frontier backtest. Sends the prompts that `metaculus-backtest.mjs batches` wrote
 // (batches/<arm>-<member>-NN.prompt.json) through the house inference dispatch and appends parsed answers to
 // answers.jsonl. A refused or "concurrency bound is occupied" delivery is retried with exponential backoff (capped at
@@ -27,7 +28,7 @@ const inference = createHouseInference({ members: DEFAULT_MEMBERS, timeoutMs: 24
 if (!inference.ready) { console.error("MCP_ORIGIN/MCP_CLIENT_ID/MCP_CLIENT_SECRET absent"); process.exit(4); }
 const file = join(dir, "answers.jsonl");
 const answers = () => (existsSync(file) ? readFileSync(file, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l)) : []);
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 const started = Date.now();
 
 for (const arm of arms) {

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Fetch what the settleable-in-advance measurement of the daily families needs, into data/ next to this record's scripts:
  *
@@ -20,14 +21,14 @@ import { parseArgs } from 'node:util';
 const { values } = parseArgs({ options: { what: { type: 'string', default: 'events,trades,candles' }, series: { type: 'string' }, from: { type: 'string', default: '2026-10-01' }, to: { type: 'string', default: '2026-10-18' }, stations: { type: 'string' } } });
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'data');
 const base = 'https://api.elections.kalshi.com/trade-api/v2';
-const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const exists = (path) => access(path).then(() => true, () => false);
 async function get(url, { json = true } = {}) {
   for (let attempt = 0; ; attempt += 1) {
     const response = await fetch(url, { headers: { accept: json ? 'application/json' : 'text/csv' } }).catch(() => null);
-    if (response?.ok) { await pause(110); return json ? response.json() : response.text(); }
+    if (response?.ok) { await sleep(110); return json ? response.json() : response.text(); }
     if (attempt >= 7) throw new Error(`${url}: ${response?.status ?? 'network'}`);
-    await pause(1000 * 2 ** attempt);
+    await sleep(1000 * 2 ** attempt);
   }
 }
 const from = Date.parse(`${values.from}T00:00:00Z`), to = Date.parse(`${values.to}T00:00:00Z`);
@@ -97,7 +98,7 @@ if (what.has('asos')) {
     void y1; void m1; void d1; void y2; void m2; void d2;
     await writeFile(file, text);
     process.stdout.write(`${station}: ${text.split('\n').length - 1} rows\n`);
-    await pause(1500);
+    await sleep(1500);
   }
 }
 void appendFile;

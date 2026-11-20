@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Derives a set of Kalshi market research briefs (src/kalshi-market-brief.mjs) for the
 // open events closing soonest, across categories, and writes them as typed records to
 // data/records/kalshi-market-briefs/YYYY-MM-DD/. Paper only: it reads Kalshi's
@@ -15,7 +16,7 @@ import { HOUSE_MODEL_HOOKS, KALSHI_API, baseRateFamily, buildKalshiMarketBrief, 
 
 /** This package's own root: briefs land under data/records/kalshi-market-briefs/. */
 export const NODE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const pause = (ms) => new Promise((done) => setTimeout(done, ms));
+
 const USER_AGENT = '561-group-forecasting-services-section (forecasting@561.group)';
 
 /** GET a Kalshi public path with backoff on throttling; throws after the last attempt. */
@@ -24,13 +25,13 @@ async function kalshiGet(path, query, { fetchImpl = fetch, paceMs = 70 } = {}) {
   for (const [key, value] of Object.entries(query ?? {})) if (value !== undefined && value !== '') url.searchParams.set(key, String(value));
   let lastStatus = null;
   for (let attempt = 0; attempt < 6; attempt += 1) {
-    await pause(paceMs);
+    await sleep(paceMs);
     const res = await fetchImpl(url, { headers: { accept: 'application/json', 'user-agent': USER_AGENT }, signal: AbortSignal.timeout(60_000) });
     if (res.ok) return res.json();
     lastStatus = res.status;
     if (res.status === 404) return null;
     if (res.status !== 429 && res.status < 500) break;
-    await pause(1000 * 2 ** attempt);
+    await sleep(1000 * 2 ** attempt);
   }
   throw new Error(`kalshi-market-briefs: GET ${url.pathname} answered ${lastStatus}`);
 }

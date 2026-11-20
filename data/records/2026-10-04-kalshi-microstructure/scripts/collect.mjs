@@ -1,10 +1,11 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Resumable collector: books (+ taker tape + the desk's resting-order queue positions) for the desk's
 // candidate universe. Read-only. Usage: node collect.mjs [--until ISO] [--every 300] [--once]
 // Output (append-only NDJSON, data/): books-YYYY-MM-DD.ndjson, trades-YYYY-MM-DD.ndjson, desk-queue-YYYY-MM-DD.ndjson,
 // universe.json, collect-state.json (resume point: last trade timestamp per ticker).
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { makeClient, sleep, cents, levels, tradesFor, slimTrade, appendNdjson, dataDir, weatherSeries, gasSeriesAll } from './lib.mjs';
+import { makeClient, cents, levels, tradesFor, slimTrade, appendNdjson, dataDir, weatherSeries, gasSeriesAll } from "./lib.mjs";
 
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i < 0 ? d : process.argv[i + 1] ?? true; };
 const until = arg('until') ? Date.parse(arg('until')) : Infinity;

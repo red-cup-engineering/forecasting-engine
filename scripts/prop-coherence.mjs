@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Prop-market coherence (Obsmetrologia frame 14): pathwise constraints among one game's player-prop markets.
 //   node scripts/prop-coherence.mjs scan    [--sports nfl,mlb,nhl,nba] [--out file.json]
 //   node scripts/prop-coherence.mjs history [--from 2026-09-04] [--to 2026-10-06] [--sports nfl,nhl,nba,mlb]
@@ -13,7 +14,7 @@ import { normMarket, buildConstraints, checkConstraints, projectMids } from '../
 const BASE = 'https://api.elections.kalshi.com/trade-api/v2';
 const CACHE = process.env.PROP_CACHE || '/tmp/claude-1000/-home-emsenn-info/bfd39b66-66a8-4bd1-abf7-8a75503c9632/scratchpad/props-cache';
 fs.mkdirSync(CACHE, { recursive: true });
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 const GAP = 450;
 let last = 0, consecutive429 = 0, stopped = false;
 class Stop extends Error {}

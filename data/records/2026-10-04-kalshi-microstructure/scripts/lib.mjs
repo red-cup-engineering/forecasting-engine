@@ -1,3 +1,4 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Shared helpers for the microstructure record. Read-only: public market data plus the desk's signed GETs.
 import { readFileSync, appendFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -14,7 +15,7 @@ export const clientPath = fileURLToPath(new URL('@red-cup-engineering/kalshi-eng
 const { createKalshiClient } = await import(clientPath);
 export const makeClient = (opts) => createKalshiClient(opts);
 
-export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 export const num = (x) => (x === undefined || x === null || x === '' ? null : Number(x));
 export const cents = (x) => Math.round(Number(x) * 100);
 

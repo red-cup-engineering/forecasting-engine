@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // For every cataloged earnings event, find the company's 8-K (item 2.02) accepted BEFORE the call start
 // and cache the press-release exhibit text. Public SEC endpoints, descriptive User-Agent, <= 8 req/s.
 //   node scripts/earnings-mentions-edgar.mjs [--cache DIR] [--contact EMAIL]
@@ -10,7 +11,7 @@ const opt = (n, d) => { const i = args.indexOf(`--${n}`); return i < 0 ? d : arg
 const cache = opt('cache', '/tmp/claude-1000/-home-emsenn-info/ff528934-809b-45da-8279-b7a50087597e/scratchpad/cache');
 const UA = `forecasting-research ${opt('contact', 'morgan.sennhauser@gmail.com')}`;
 mkdirSync(join(cache, 'edgar'), { recursive: true });
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 let last = 0;
 async function get(url, json = true) {
   for (let a = 0; a < 6; a += 1) {

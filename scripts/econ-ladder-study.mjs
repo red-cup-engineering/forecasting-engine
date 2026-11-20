@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Are Kalshi's scheduled-economic-release ladders (CPI, payrolls, unemployment, Fed, GDP, PCE, claims, retail,
  * ISM) calibrated, coherent, and is there a fee-surviving tail rule?  Read-only public data; never orders.
@@ -36,7 +37,7 @@ const SERIES = (arg('series', 'KXCPI,KXCPICORE,KXU3,KXPAYROLLS,KXFED,KXFEDDECISI
 const API = 'https://api.elections.kalshi.com/trade-api/v2';
 const FIRST_YEAR = 23;
 for (const d of ['series', 'events', 'mk', 'q']) mkdirSync(join(CACHE, d), { recursive: true });
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 const num = (v) => { if (v === undefined || v === null || v === '') return null; const n = Number(v); return Number.isFinite(n) ? n : null; };
 
 // ---------------------------------------------------------------- http (>= 450 ms pacing, 429 backoff)

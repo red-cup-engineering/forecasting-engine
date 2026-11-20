@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Historical coherence over settled daily-temperature ladders: hourly candlestick bid/ask closes,
 // per event-hour gluing (ladder) and per station-day-hour gluing (high x low joint).
 //   node scripts/kalshi-coherence-history.mjs [--days 14]
@@ -15,7 +16,7 @@ const opt = (n, d) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i
 const days = Number(opt('days', 14));
 const dir = fileURLToPath(new URL('../data/records/2026-10-04-kalshi-coherence/data/', import.meta.url));
 mkdirSync(dir, { recursive: true });
-const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+
 const num = (v) => { const n = Number(v); return Number.isFinite(n) ? n : null; };
 
 const allSeries = (await getJson(`${BASE}/series`)).series.filter((s) => /^KX(HIGH|LOWT)/u.test(s.ticker) && /temperature/iu.test(s.title) && s.frequency === 'daily');
@@ -28,7 +29,7 @@ for (const s of allSeries) {
     const d = await getJson(`${BASE}/markets?series_ticker=${s.ticker}&status=settled&limit=1000&min_close_ts=${minClose}${cursor ? `&cursor=${cursor}` : ''}`);
     for (const m of d.markets) markets.push({ ticker: m.ticker, event_ticker: m.event_ticker, series: s.ticker, strike_type: m.strike_type, floor_strike: m.floor_strike, cap_strike: m.cap_strike, result: m.result, open: Date.parse(m.open_time) / 1000, close: Date.parse(m.close_time) / 1000, rules_primary: m.rules_primary, theta: 0.07 * (num(s.fee_multiplier) ?? 1) });
     cursor = d.cursor; if (!cursor || !d.markets.length) break;
-    await pause(60);
+    await sleep(60);
   }
 }
 console.error('markets', markets.length);
@@ -43,7 +44,7 @@ for (const group of byDate.values()) {
       const r = await getJson(`${BASE}/markets/candlesticks?market_tickers=${ch.map((m) => m.ticker).join(',')}&start_ts=${st}&end_ts=${en}&period_interval=60`);
       for (const mk of r.markets ?? []) candles.set(mk.market_ticker, mk.candlesticks);
     } catch (e) { console.error('candle batch failed', String(e).slice(0, 80)); }
-    await pause(80);
+    await sleep(80);
   }
 }
 const byEvent = new Map();

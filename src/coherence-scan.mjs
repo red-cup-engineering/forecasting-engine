@@ -1,3 +1,4 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Live coherence scan over Kalshi's open universe: public market data only, no order,
  * no signature. Fetches events (with nested markets) and series metadata, builds the
@@ -12,13 +13,13 @@ import {
 } from './coherence-families.mjs';
 
 export const BASE = 'https://api.elections.kalshi.com/trade-api/v2';
-const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+
 
 export async function getJson(url, fetchImpl = fetch, tries = 5) {
   for (let i = 0; i < tries; i += 1) {
     const r = await fetchImpl(url, { headers: { accept: 'application/json' } });
     if (r.ok) return r.json();
-    if (r.status === 429 || r.status >= 500) { await pause(500 * 2 ** i); continue; }
+    if (r.status === 429 || r.status >= 500) { await sleep(500 * 2 ** i); continue; }
     throw new Error(`HTTP ${r.status} ${url}`);
   }
   throw new Error(`gave up ${url}`);
@@ -53,7 +54,7 @@ export async function fetchUniverse({ fetchImpl = fetch, maxPages = 200, throttl
     onPage?.(p, events.length);
     cursor = d.cursor;
     if (!cursor || !d.events.length) break;
-    await pause(throttleMs);
+    await sleep(throttleMs);
   }
   return { events, series };
 }
@@ -151,7 +152,7 @@ export async function redoWithDepth(family, assessed, { fetchImpl = fetch, throt
       const d = m.venue === 'kalshi' ? await fetchDepth(m.id, fetchImpl) : await polymarketDepth(m.id);
       m.bids = d.bids; m.asks = d.asks; m.deep = true;
     } catch { if (m.venue !== 'kalshi') { m.bids = []; m.asks = []; } }
-    await pause(m.venue === 'kalshi' ? throttleMs : 3200);
+    await sleep(m.venue === 'kalshi' ? throttleMs : 3200);
   }
   return { family: deep, assessed: assessFamily(deep) };
 }

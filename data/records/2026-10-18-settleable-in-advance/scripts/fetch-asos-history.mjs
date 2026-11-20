@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * The settlement source's history against the observations that precede it: for each station, the NWS Daily Climate Report values the
  * Weather Company settles on (high, low, precipitation of every climate day, from the Iowa Environmental Mesonet's parsed CLI
@@ -13,14 +14,14 @@ import { parseArgs } from 'node:util';
 
 const { values } = parseArgs({ options: { stations: { type: 'string' }, from: { type: 'string', default: '2026-01-01' }, to: { type: 'string', default: '2026-10-01' } } });
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'data');
-const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const exists = (path) => access(path).then(() => true, () => false);
 async function get(url, json) {
   for (let attempt = 0; ; attempt += 1) {
     const response = await fetch(url).catch(() => null);
     if (response?.ok) return json ? response.json() : response.text();
     if (attempt >= 6) throw new Error(`${url}: ${response?.status ?? 'network'}`);
-    await pause(3000 * 2 ** attempt);
+    await sleep(3000 * 2 ** attempt);
   }
 }
 await mkdir(join(root, 'cli'), { recursive: true });
@@ -32,7 +33,7 @@ for (const station of (values.stations ?? '').split(',').filter(Boolean)) {
     const years = [...new Set([from.getUTCFullYear(), to.getUTCFullYear()])], results = [];
     for (let y = years[0]; y <= years.at(-1); y += 1) results.push(...((await get(`https://mesonet.agron.iastate.edu/json/cli.py?station=${station}&year=${y}`, true)).results ?? []));
     await writeFile(cli, JSON.stringify(results.map((r) => ({ valid: r.valid, high: r.high, low: r.low, precip: r.precip, product: r.product }))));
-    await pause(1000);
+    await sleep(1000);
   }
   const iata = station.startsWith('K') ? station.slice(1) : station;
   for (let m = new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth(), 1)); m < to; m = new Date(Date.UTC(m.getUTCFullYear(), m.getUTCMonth() + 1, 1))) {
@@ -41,7 +42,7 @@ for (const station of (values.stations ?? '').split(',').filter(Boolean)) {
     const end = new Date(Date.UTC(m.getUTCFullYear(), m.getUTCMonth() + 1, 1));
     const text = await get(`https://mesonet.agron.iastate.edu/cgi-bin/request/asos1min.py?station=${iata}&vars=tmpf&vars=precip&sts=${m.toISOString().slice(0, 16)}Z&ets=${end.toISOString().slice(0, 16)}Z&sample=1min&what=download&tz=UTC`, false);
     await writeFile(file, text);
-    await pause(1500);
+    await sleep(1500);
   }
   process.stdout.write(`${station} done\n`);
 }

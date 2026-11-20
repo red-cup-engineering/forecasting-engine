@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * In-play regime study: does conditioning Kalshi game-winner prices on GAME STATE sharpen the late
  * favourite-longshot edge? Read-only public data; never places an order.
@@ -39,7 +40,7 @@ const THETA = 0.07; const BAND_LO = 0.90; const BAND_HI = 0.985;
 // ---------- fetching: pacing, 429 backoff, cache ----------
 class StopError extends Error {}
 const lastHit = new Map(); let consecutive429 = 0; let stopped = false;
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function get(url, file) {
   const path = join(CACHE, file);
   if (existsSync(path)) { try { return JSON.parse(readFileSync(path, 'utf8')); } catch { /* refetch */ } }

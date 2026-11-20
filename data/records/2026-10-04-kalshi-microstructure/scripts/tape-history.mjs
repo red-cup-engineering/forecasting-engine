@@ -1,8 +1,9 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Historic public taker tape for settled markets of the desk's universe (resumable).
 // node tape-history.mjs [--days 7] [--kind weather|gas|both] [--pace 150]
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { makeClient, sleep, tradesFor, slimTrade, appendNdjson, dataDir, weatherSeries, gasSeriesAll } from './lib.mjs';
+import { makeClient, tradesFor, slimTrade, appendNdjson, dataDir, weatherSeries, gasSeriesAll } from "./lib.mjs";
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i < 0 ? d : process.argv[i + 1]; };
 const days = Number(arg('days', 7)), kind = arg('kind', 'both'), pace = Number(arg('pace', 150));
 const c = makeClient();

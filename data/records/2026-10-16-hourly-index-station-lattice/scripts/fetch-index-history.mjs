@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Fetch Kalshi's per-minute city index with every member station's reading (detailed=true), one UTC day per
  * request, into data/index/<city>/<date>.json, and each city's published calibrations (the offsets and reference
@@ -15,7 +16,7 @@ const { values } = parseArgs({ options: { from: { type: 'string' }, to: { type: 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'data', 'index');
 const base = 'https://api.elections.kalshi.com/trade-api/v2/live_data/weather';
 const day = 86_400_000;
-const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 for (const city of values.cities.split(',')) {
   await mkdir(join(root, city), { recursive: true });
   const calibrations = await fetch(`${base}/${city}/calibrations`, { headers: { accept: 'application/json' } });
@@ -29,9 +30,9 @@ for (const city of values.cities.split(',')) {
       const response = await fetch(`${base}/${city}?from=${t}&to=${t + day - 1}&detailed=true`, { headers: { accept: 'application/json' } });
       if (response.ok) { await writeFile(file, await response.text()); break; }
       if (attempt >= 5) throw new Error(`${city} ${date}: ${response.status}`);
-      await pause(1000 * 2 ** attempt);
+      await sleep(1000 * 2 ** attempt);
     }
     process.stdout.write(`${city} ${date}\n`);
-    await pause(250);
+    await sleep(250);
   }
 }

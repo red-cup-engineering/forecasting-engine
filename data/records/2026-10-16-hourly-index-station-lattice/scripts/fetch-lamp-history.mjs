@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Fetch NOAA's archived LAMP station guidance (model LAV: hourly runs, hourly temperature in whole F out to 25 h)
  * for every member station of the index cities, from the Iowa Environmental Mesonet MOS archive, into
@@ -12,7 +13,7 @@ import { parseArgs } from 'node:util';
 
 const { values } = parseArgs({ options: { from: { type: 'string' }, to: { type: 'string' }, cities: { type: 'string', default: 'nyc,miami,chicago,la-coastal' } } });
 const data = join(dirname(fileURLToPath(import.meta.url)), '..', 'data');
-const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const stations = new Set();
 for (const city of values.cities.split(',')) {
   const [first] = (await readdir(join(data, 'index', city))).filter((n) => n.endsWith('.json')).sort().slice(-1);
@@ -28,7 +29,7 @@ for (const station of [...stations].sort()) {
     const text = response.ok ? await response.text() : '';
     if (text.startsWith('runtime,')) { await writeFile(file, text); process.stdout.write(`${station} ${text.split('\n').length - 2} rows\n`); break; }
     if (attempt >= 5) throw new Error(`${station}: ${response.status} ${text.slice(0, 120)}`);
-    await pause(5000 * 2 ** attempt);
+    await sleep(5000 * 2 ** attempt);
   }
-  await pause(2000);
+  await sleep(2000);
 }

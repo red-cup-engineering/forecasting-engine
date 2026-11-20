@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Derives the set of Kalshi edge candidates: reads the last `days` of settled non-combo markets
 // and their pre-close candlesticks from Kalshi's unauthenticated market-data API, measures
 // realised rate versus price per (series family, horizon, price bucket, side, mode) net of
@@ -23,14 +24,14 @@ import {
 
 /** This package's own root: records land under data/records/kalshi-edge-candidates/. */
 export const NODE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const pause = (ms) => new Promise((done) => setTimeout(done, ms));
+
 const USER_AGENT = '561-group-forecasting-services-section (forecasting@561.group)';
 const seconds = (iso) => Math.floor(Date.parse(iso) / 1000);
 
 /** A shared pacer: at most one request start per `paceMs` across all concurrent workers (~14/s at 70ms). */
 function makePacer(paceMs) {
   let next = 0;
-  return async () => { const now = Date.now(); const at = Math.max(now, next); next = at + paceMs; if (at > now) await pause(at - now); };
+  return async () => { const now = Date.now(); const at = Math.max(now, next); next = at + paceMs; if (at > now) await sleep(at - now); };
 }
 
 async function kalshiGet(path, query, { fetchImpl = fetch, pace }) {
@@ -41,11 +42,11 @@ async function kalshiGet(path, query, { fetchImpl = fetch, pace }) {
     await pace();
     let res;
     try { res = await fetchImpl(url, { headers: { accept: 'application/json', 'user-agent': USER_AGENT }, signal: AbortSignal.timeout(90_000) }); }
-    catch { await pause(1000 * 2 ** attempt); continue; }
+    catch { await sleep(1000 * 2 ** attempt); continue; }
     if (res.ok) return res.json();
     lastStatus = res.status;
     if (res.status === 404 || res.status === 400) return null;
-    await pause(1000 * 2 ** attempt);
+    await sleep(1000 * 2 ** attempt);
   }
   throw new Error(`kalshi-edge-candidates: GET ${url.pathname} answered ${lastStatus}`);
 }

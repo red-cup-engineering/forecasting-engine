@@ -1,3 +1,4 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Live public-data fetchers (Atlanta Fed GDPNow workbook, Yahoo ZQ, NY Fed EFFR, Deribit DVOL, Coinbase, Yahoo CL=F). Injectable in tests.
 import { execFile } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -10,7 +11,7 @@ import { zqSymbol } from './fed.mjs';
 
 const run = promisify(execFile);
 const here = dirname(fileURLToPath(import.meta.url));
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 const cacheDir = (root) => { const d = join(root, 'cache'); mkdirSync(d, { recursive: true }); return d; };
 const fresh = (f, ms) => existsSync(f) && Date.now() - statSync(f).mtimeMs < ms;
 

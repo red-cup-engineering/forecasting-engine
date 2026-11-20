@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Depth on offer, sampled: the venue keeps no history of its order books, so the queue a resting bid joins can only be measured
  * forward. This reads (public GETs only, paced) the order book of every open market of the given series every `--every` seconds for
@@ -14,12 +15,12 @@ const { values } = parseArgs({ options: { series: { type: 'string' }, rounds: { 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'data', 'books');
 await mkdir(root, { recursive: true });
 const base = 'https://api.elections.kalshi.com/trade-api/v2';
-const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const get = async (path) => { for (let a = 0; a < 5; a += 1) { const r = await fetch(base + path).catch(() => null); if (r?.ok) return r.json(); await pause(1000 * 2 ** a); } return null; };
+
+const get = async (path) => { for (let a = 0; a < 5; a += 1) { const r = await fetch(base + path).catch(() => null); if (r?.ok) return r.json(); await sleep(1000 * 2 ** a); } return null; };
 const gap = 1000 / Number(values.rate);
 const list = async () => {
   const out = [];
-  for (const series of values.series.split(',')) { const page = await get(`/markets?series_ticker=${series}&status=open&limit=1000`); for (const m of page?.markets ?? []) out.push({ ticker: m.ticker, series, close: m.close_time, strike_type: m.strike_type, floor: m.floor_strike, cap: m.cap_strike }); await pause(gap); }
+  for (const series of values.series.split(',')) { const page = await get(`/markets?series_ticker=${series}&status=open&limit=1000`); for (const m of page?.markets ?? []) out.push({ ticker: m.ticker, series, close: m.close_time, strike_type: m.strike_type, floor: m.floor_strike, cap: m.cap_strike }); await sleep(gap); }
   return out;
 };
 for (let round = 0; round < Number(values.rounds); round += 1) {
@@ -27,9 +28,9 @@ for (let round = 0; round < Number(values.rounds); round += 1) {
   for (const m of markets) {
     const book = await get(`/markets/${m.ticker}/orderbook?depth=5`), at = Date.now();
     if (book) lines.push(JSON.stringify({ at, ...m, yes: book.orderbook_fp?.yes_dollars ?? [], no: book.orderbook_fp?.no_dollars ?? [] }));
-    await pause(gap);
+    await sleep(gap);
   }
   await appendFile(join(root, `${new Date().toISOString().slice(0, 10)}.jsonl`), lines.join('\n') + '\n');
   process.stdout.write(`round ${round} ${lines.length} books ${(Date.now() - started) / 1000}s\n`);
-  await pause(Math.max(0, Number(values.every) * 1000 - (Date.now() - started)));
+  await sleep(Math.max(0, Number(values.every) * 1000 - (Date.now() - started)));
 }

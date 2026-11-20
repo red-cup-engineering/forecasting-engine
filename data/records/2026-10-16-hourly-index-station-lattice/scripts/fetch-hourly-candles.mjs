@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Fetch the one-minute candlesticks (best yes bid and yes ask: open, low, high, close; traded price; volume) of every traded
  * market of the settled hourly index events in data/events/<series>.jsonl, from 15 minutes before the market opens to its
@@ -14,13 +15,13 @@ import { parseArgs } from 'node:util';
 const { values } = parseArgs({ options: { series: { type: 'string', default: 'KXTEMPNYCHS,KXTEMPMIAH,KXTEMPCHIHS,KXTEMPLAXHS' } } });
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'data');
 const base = 'https://api.elections.kalshi.com/trade-api/v2';
-const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function get(path) {
   for (let attempt = 0; ; attempt += 1) {
     const response = await fetch(base + path, { headers: { accept: 'application/json' } }).catch(() => null);
-    if (response?.ok) { await pause(100); return response.json(); }
+    if (response?.ok) { await sleep(100); return response.json(); }
     if (attempt >= 6) throw new Error(`${path}: ${response.status}`);
-    await pause(1000 * 2 ** attempt);
+    await sleep(1000 * 2 ** attempt);
   }
 }
 await mkdir(join(root, 'candles'), { recursive: true });

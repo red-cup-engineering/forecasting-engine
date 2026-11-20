@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * The stations' routine hourly METARs with their precipitation group (p01i, inches in the last hour; 0.0001 is a trace) and present
  * weather, from the Iowa Environmental Mesonet's archive, into data/metar/<ICAO>.csv. The one-minute archive's precipitation column
@@ -13,7 +14,7 @@ import { parseArgs } from 'node:util';
 const { values } = parseArgs({ options: { stations: { type: 'string' }, from: { type: 'string', default: '2026-01-01' }, to: { type: 'string', default: '2026-10-19' } } });
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'data', 'metar');
 await mkdir(root, { recursive: true });
-const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const [y1, m1, d1] = values.from.split('-').map(Number), [y2, m2, d2] = values.to.split('-').map(Number);
 for (const station of (values.stations ?? '').split(',').filter(Boolean)) {
   const file = join(root, `${station}.csv`);
@@ -24,8 +25,8 @@ for (const station of (values.stations ?? '').split(',').filter(Boolean)) {
     const response = await fetch(url).catch(() => null);
     if (response?.ok) { await writeFile(file, await response.text()); break; }
     if (attempt >= 5) throw new Error(`${station}: ${response?.status ?? 'network'}`);
-    await pause(3000 * 2 ** attempt);
+    await sleep(3000 * 2 ** attempt);
   }
   process.stdout.write(`${station}\n`);
-  await pause(1500);
+  await sleep(1500);
 }

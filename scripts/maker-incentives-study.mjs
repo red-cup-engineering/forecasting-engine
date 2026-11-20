@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Is thin-book market making plus Kalshi liquidity-incentive rewards a lane?  READ-ONLY, public GETs only, never orders.
  *
@@ -93,7 +94,7 @@ export function restBid(order, trades) {
 // ------------------------------------------------------------------ http (public, paced, 429-aware)
 
 const CACHE = process.env.MAKER_CACHE ?? '/tmp/claude-1000/-home-emsenn-info/bfd39b66-66a8-4bd1-abf7-8a75503c9632/scratchpad/maker-cache';
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 let last = 0; let strikes = 0;
 async function get(path, query = {}) {
   const url = new URL(API + path);

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * venue-matrix.mjs scan [--sports nfl,mlb,...] [--out file]
  *
@@ -28,7 +29,7 @@ const PACE_MS = 350; const HOST_PACE = { 'api.elections.kalshi.com': 900 }; // K
 
 // ---------------------------------------------------------------- paced, 429-aware http
 const lastAt = new Map(); const stopped = new Set(); const log = [];
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function http(url, init) {
   const host = new URL(url).host;
   if (stopped.has(host)) return null;

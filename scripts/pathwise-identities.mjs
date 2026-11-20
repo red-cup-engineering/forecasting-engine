@@ -1,3 +1,4 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Scan Kalshi's public API for pathwise identities (baskets with a rule-constant payoff) and price them.
 // Read-only GETs, no auth, no orders. >=160 ms between requests; stops on the first HTTP 429 (no retries).
 //
@@ -17,7 +18,7 @@ import {
 const KALSHI = 'https://api.elections.kalshi.com/trade-api/v2';
 const ESPN_NFL = 'https://site.api.espn.com/apis/v2/sports/football/nfl/standings';
 let MIN_GAP_MS = 350; // >=150 ms required; Kalshi 429s a 160 ms cadence on nested-market event pulls, so default slower (--gap)
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 
 // ------------------------------------------------------------------ http (paced, 429 = stop)
 class Stop extends Error {}

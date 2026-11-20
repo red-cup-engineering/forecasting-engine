@@ -1,7 +1,8 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // All active liquidity-incentive programs (public GET /incentive_programs), paged. Writes data/incentives-<ts>.json.
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { makeClient, sleep, dataDir } from './lib.mjs';
+import { makeClient, dataDir } from "./lib.mjs";
 const c = makeClient();
 const all = [];
 let cursor;

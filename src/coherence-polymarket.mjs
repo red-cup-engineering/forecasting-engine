@@ -1,3 +1,4 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Cross-venue legs: Polymarket US daily-high brackets for the stations both venues list,
  * matched to Kalshi's by the polymarket-engineering-services-section logger's own matching
@@ -10,7 +11,7 @@ import { createPolymarketUsClient } from '../../../../polymarket-engineering-ser
 
 const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const kalshiDateToken = (iso) => `-${iso.slice(2, 4)}${MON[Number(iso.slice(5, 7)) - 1]}${iso.slice(8, 10)}`;
-const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+
 const num = (v) => { const n = Number(v); return Number.isFinite(n) ? n : null; };
 
 let client;
@@ -31,8 +32,8 @@ export async function polymarketExtras({ events }, { days = [0, 1, 2], throttleM
     for (const d of days) {
       const iso = new Date(today.getTime() + d * 86400_000).toISOString().slice(0, 10);
       let ev;
-      try { ev = await pm().getEvent(eventSlug(city, 'high', iso)); } catch { await pause(throttleMs); continue; }
-      await pause(throttleMs);
+      try { ev = await pm().getEvent(eventSlug(city, 'high', iso)); } catch { await sleep(throttleMs); continue; }
+      await sleep(throttleMs);
       const quotes = [];
       for (const m of ev?.markets ?? []) {
         if (m.closed || m.active === false) continue;

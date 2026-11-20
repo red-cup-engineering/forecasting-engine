@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Shadow backtest of the bot's forecasting recipe on RESOLVED binary questions, point in time, scored against the market
 // price at the same instant. Metaculus's API needs a bot token, so the replay set is Polymarket (public gamma + CLOB APIs);
 // the same `score` step takes Metaculus resolved questions once a token exists.
@@ -34,7 +35,7 @@ const val = (n, d) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i
 const dir = val("dir", val("out", "."));
 const readJson = (f) => JSON.parse(readFileSync(join(dir, f), "utf8"));
 const writeJson = (f, v) => writeFileSync(join(dir, f), `${JSON.stringify(v, null, 1)}\n`);
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 const jget = async (url) => { const r = await fetch(url, { headers: { "User-Agent": UA } }); if (!r.ok) throw new Error(`${r.status} ${url.slice(0, 90)}`); return r.json(); };
 
 const NOISE = /up or down|highest temperature|lowest temperature|temperature in|tweets|how many times|price of .* (on|at) |\bspread\b|o\/u|over\/under|vs\.?\s|win on 20\d\d/iu;

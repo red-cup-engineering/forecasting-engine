@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Fetch every settled hourly index event in a window with its markets (strike, result, settled index value,
  * volume) into data/events/<series>.jsonl, then every trade of every market that traded into
@@ -13,13 +14,13 @@ import { parseArgs } from 'node:util';
 const { values } = parseArgs({ options: { from: { type: 'string' }, to: { type: 'string' }, series: { type: 'string', default: 'KXTEMPNYCHS,KXTEMPMIAH,KXTEMPCHIHS,KXTEMPLAXHS' } } });
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'data');
 const base = 'https://api.elections.kalshi.com/trade-api/v2';
-const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function get(path) {
   for (let attempt = 0; ; attempt += 1) {
     const response = await fetch(base + path, { headers: { accept: 'application/json' } });
-    if (response.ok) { await pause(120); return response.json(); }
+    if (response.ok) { await sleep(120); return response.json(); }
     if (attempt >= 6) throw new Error(`${path}: ${response.status}`);
-    await pause(1000 * 2 ** attempt);
+    await sleep(1000 * 2 ** attempt);
   }
 }
 const from = Date.parse(`${values.from}T00:00:00Z`), to = Date.parse(`${values.to}T00:00:00Z`);

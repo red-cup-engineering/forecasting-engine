@@ -1,3 +1,4 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Fetch settled Kalshi daily-temperature markets and hourly candles (public data, read-only).
 // usage: node scripts/kalshi-sheaf-fetch.mjs [outDir] [minCloseISO]
 import fs from "node:fs";
@@ -8,7 +9,7 @@ const here = path.dirname(new URL(import.meta.url).pathname);
 const rec = path.join(here, "../data/records/2026-10-04-kalshi-sheaf");
 const out = process.argv[2] || path.join(rec, "data");
 const minClose = Math.floor(Date.parse(process.argv[3] || "2026-08-15T00:00:00Z") / 1000);
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function get(url) {
   for (let i = 0; i < 6; i++) {
     try {

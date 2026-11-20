@@ -1,3 +1,4 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Shadow read of the CURRENT market sections: energy, tension map, harmonic estimates for thin ladders.
 // Reads open Kalshi temperature markets (public, read-only) + history from the fetch directory. No orders.
 // usage: node scripts/kalshi-sheaf-live.mjs <historyDir> [outFile]
@@ -13,7 +14,7 @@ const hist = path.resolve(process.argv[2] || path.join(rec, "data-long"));
 const outFile = path.resolve(process.argv[3] || path.join(rec, "results", "live-shadow.md"));
 const B = "https://api.elections.kalshi.com/trade-api/v2";
 const UA = { accept: "application/json", "user-agent": "561-group research (ops@561.group)" };
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 const files = fs.readdirSync(hist).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(fs.readFileSync(path.join(hist, f))));
 const events = loadEvents(files);
 const now = Math.floor(Date.now() / 1000), num = (x) => (x == null ? null : Number(x));

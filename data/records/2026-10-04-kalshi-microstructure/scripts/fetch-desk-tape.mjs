@@ -1,7 +1,8 @@
+import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 // Public tape for every ticker the desk has rested an order on, from the desk's first order on (for the replay in validate.py).
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { makeClient, sleep, tradesFor, slimTrade, dataDir } from './lib.mjs';
+import { makeClient, tradesFor, slimTrade, dataDir } from "./lib.mjs";
 const c = makeClient();
 const orders = JSON.parse(readFileSync(join(dataDir, 'desk-orders.json'), 'utf8'));
 const minTs = Math.floor(Math.min(...orders.map((o) => Date.parse(o.created_time))) / 1000) - 8 * 3600;
