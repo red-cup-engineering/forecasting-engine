@@ -1,3 +1,4 @@
+import { isNonEmptyString } from "@red-cup-engineering/signcell/values";
 /**
  * The Kalshi market research brief: one typed record per Kalshi event that
  * carries everything the house knows about it, so that research and bids share
@@ -409,7 +410,7 @@ export function buildKalshiMarketBrief({ event, series, markets, now, house = nu
 
 // ---------------------------------------------------------------- validation
 
-const isString = (v) => typeof v === 'string' && v.length > 0;
+
 const isNumOrNull = (v) => v === null || (typeof v === 'number' && Number.isFinite(v));
 
 /**
@@ -421,15 +422,15 @@ export function validateKalshiMarketBrief(brief) {
   const problems = [];
   const need = (ok, message) => { if (!ok) problems.push(message); };
   need(brief?.type === BRIEF_TYPE && brief?.version === BRIEF_VERSION, 'type/version');
-  need(isString(brief?.briefId) && Number.isFinite(Date.parse(brief?.asOf)), 'briefId/asOf');
+  need(isNonEmptyString(brief?.briefId) && Number.isFinite(Date.parse(brief?.asOf)), 'briefId/asOf');
   const event = brief?.event ?? {};
-  for (const key of ['eventTicker', 'seriesTicker', 'title', 'category', 'url', 'seriesUrl', 'closesAt', 'expectedSettleAt', 'settlesOn']) need(isString(event[key]), `event.${key}`);
+  for (const key of ['eventTicker', 'seriesTicker', 'title', 'category', 'url', 'seriesUrl', 'closesAt', 'expectedSettleAt', 'settlesOn']) need(isNonEmptyString(event[key]), `event.${key}`);
   need(typeof event.hoursToClose === 'number', 'event.hoursToClose');
   need(typeof brief?.rules?.primary === 'string', 'rules.primary');
   need(Array.isArray(brief?.settlementSource?.all), 'settlementSource.all');
   need(Array.isArray(brief?.markets) && brief.markets.length > 0, 'markets');
   for (const market of brief?.markets ?? []) {
-    need(isString(market.ticker) && isString(market.label), `market ${market.ticker} ticker/label`);
+    need(isNonEmptyString(market.ticker) && isNonEmptyString(market.label), `market ${market.ticker} ticker/label`);
     for (const key of ['yesBidCents', 'yesAskCents', 'noBidCents', 'noAskCents', 'lastCents', 'impliedYes']) need(isNumOrNull(market[key]), `market ${market.ticker}.${key}`);
     need(typeof market.volume24h === 'number', `market ${market.ticker}.volume24h`);
   }
@@ -437,10 +438,10 @@ export function validateKalshiMarketBrief(brief) {
   need(Array.isArray(brief?.whatWouldMoveIt) && brief.whatWouldMoveIt.length > 0, 'whatWouldMoveIt');
   for (const o of brief?.opportunities ?? []) {
     for (const key of ['priceCents', 'payoffCents', 'winProbability', 'edgeCents']) need(typeof o[key] === 'number', `opportunity ${o.marketTicker}.${key}`);
-    need(isString(o.settlesOn) && isString(o.correlation?.event), `opportunity ${o.marketTicker} settlesOn/correlation`);
+    need(isNonEmptyString(o.settlesOn) && isNonEmptyString(o.correlation?.event), `opportunity ${o.marketTicker} settlesOn/correlation`);
     need(o.side === 'yes' || o.side === 'no', `opportunity ${o.marketTicker}.side`);
   }
-  need(isString(brief?.disclosure), 'disclosure');
+  need(isNonEmptyString(brief?.disclosure), 'disclosure');
   return problems;
 }
 

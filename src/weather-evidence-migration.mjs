@@ -1,3 +1,4 @@
+import { isEqual } from "@red-cup-engineering/signcell/values";
 /**
  * Migration of weather evidence archives to the tree forms of weather-evidence-record.mjs.
  *
@@ -53,7 +54,7 @@ import {jsonDigest} from './weather-state-tree.mjs';
 
 const ID=/^([a-f0-9]{64})\.json\.gz$/u;
 const sha=text=>createHash('sha256').update(text).digest('hex');
-const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+
 const BATCH=8;
 
 async function listFiles(dir){
@@ -115,14 +116,14 @@ function measuringBackend(){
 /** What readers use, compared old against loaded; returns the names of fields that differ. */
 function readerDifferences(old,loaded){
   const bad=[],keep=['dailyExtremes','science','sourceEvidenceId'];
-  for(const key of Object.keys(old))if(!keep.includes(key)&&!same(old[key],loaded[key]))bad.push(key);
+  for(const key of Object.keys(old))if(!keep.includes(key)&&!isEqual(old[key],loaded[key]))bad.push(key);
   for(const key of Object.keys(loaded))if(!keep.includes(key)&&!(key in old))bad.push(key);
-  if(!same(old.dailyExtremes,loaded.dailyExtremes))bad.push('dailyExtremes');
+  if(!isEqual(old.dailyExtremes,loaded.dailyExtremes))bad.push('dailyExtremes');
   if(old.sourceEvidenceId!==loaded.sourceEvidenceId)bad.push('sourceEvidenceId');
-  for(const key of ['at','scored','forecasted','status'])if(!same(old.science[key],loaded.science[key]))bad.push('science.'+key);
+  for(const key of ['at','scored','forecasted','status'])if(!isEqual(old.science[key],loaded.science[key]))bad.push('science.'+key);
   const usedParameters=Object.fromEntries(Object.entries(old.science.parameters??{}).filter(([k])=>isUsedParameterKey(k)));
-  if(!same(usedParameters,loaded.science.parameters))bad.push('science.parameters');
-  if(!same((old.science.forecasts??[]).filter(isUsedForecast),loaded.science.forecasts))bad.push('science.forecasts');
+  if(!isEqual(usedParameters,loaded.science.parameters))bad.push('science.parameters');
+  if(!isEqual((old.science.forecasts??[]).filter(isUsedForecast),loaded.science.forecasts))bad.push('science.forecasts');
   return bad;
 }
 
@@ -156,14 +157,14 @@ export async function migrateWeatherEvidence({root,apply=false,log=()=>{}}={}){
           const loaded=await loadWeatherEvidence({root:work,evidenceId:newId});
           const bad=readerDifferences(item.record,loaded);
           const full=await loadWeatherEvidence({root:work,evidenceId:newId,detail:'full'});
-          if(!same(full.science,item.record.science))bad.push('science(full)');
-          if(!same(unhoistRun(hoistRun(item.record.science,item.record.science.at).value,item.record.science.at),item.record.science))bad.push('hoist');
+          if(!isEqual(full.science,item.record.science))bad.push('science(full)');
+          if(!isEqual(unhoistRun(hoistRun(item.record.science,item.record.science.at).value,item.record.science.at),item.record.science))bad.push('hoist');
           if(bad.length)throw new Error('loader does not reproduce: '+bad.join(','));
           await putEvidenceAlias(work,{from:item.id,address:item.staged.address});if(apply)await removeFile({path:item.path});
           report.derivedMigrated++;
         }else{
           const loaded=await loadWeatherEvidence({root:work,evidenceId:item.id,dateHint:item.date});
-          if(!same(loaded,item.record))throw new Error('stored source does not reproduce the archive');
+          if(!isEqual(loaded,item.record))throw new Error('stored source does not reproduce the archive');
           if(apply)await removeFile({path:item.path});
           report.sourcesMigrated++;
         }
