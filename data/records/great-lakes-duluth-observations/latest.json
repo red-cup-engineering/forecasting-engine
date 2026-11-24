@@ -1,0 +1,167 @@
+{
+  "kind": "561-group.great-lakes-source-observation/v1",
+  "generatedAt": "2026-11-23T12:49:48.820Z",
+  "subject": "Duluth, Minnesota / western Lake Superior",
+  "measurementContract": {
+    "oceanicAndGreatLakesSource": "NOAA CO-OPS station 9099064",
+    "airStationSource": "NWS/NOAA METAR KDLH",
+    "verticalDatum": "IGLD",
+    "lowWaterReferenceDatum": "IGLD 1985",
+    "lowWaterReferenceSource": "https://tidesandcurrents.noaa.gov/gldatums.html",
+    "waterUnit": "metre",
+    "temporalReference": "UTC",
+    "not": [
+      "prediction",
+      "watercraft navigation advice",
+      "CVE service",
+      "trading signal",
+      "independently accepted paid service"
+    ]
+  },
+  "supply": {
+    "waterLevel": {
+      "state": "received",
+      "fresh": true,
+      "ni": "ni:///sha-256;iBmilKjPcUabdiLG7ecwO7MDo7onS-pymH3QUjZEfyY",
+      "observedAt": "2026-11-23T12:42:00.000Z"
+    },
+    "metar": {
+      "state": "received",
+      "fresh": true,
+      "ni": "ni:///sha-256;MFKZTcP4SqMBUe-SvszmBq7eZgrp7MuW7WQa7qvEZJc",
+      "observedAt": "2026-11-23T11:55:00.000Z"
+    }
+  },
+  "observations": {
+    "waterLevel": {
+      "station": "9099064",
+      "verticalDatum": "IGLD",
+      "unit": "metre",
+      "timeZone": "GMT",
+      "receivedAt": "2026-11-23T12:49:49.209Z",
+      "observedAt": "2026-11-23T12:42:00.000Z",
+      "ageSeconds": 468.82,
+      "freshness": "recent-observation",
+      "measurementState": "source-reported-possibly-preliminary",
+      "sourceCoverage": {
+        "finiteSamples": 128,
+        "meaning": "NOAA missing measurement values withheld, never zero-filled or interpolated",
+        "missingSamples": 0,
+        "reportedSamples": 128
+      },
+      "sampleCount": 128,
+      "noaaLakeSuperiorLowWaterDatum": {
+        "station": "9099064",
+        "chartDatum": "Lake Superior Low Water Datum",
+        "valueMeters": 183.2,
+        "verticalDatumVersion": "IGLD 1985",
+        "originalSource": "https://tidesandcurrents.noaa.gov/gldatums.html",
+        "measurementClaim": "NOAA source-owned chart-datum reference, not a vessel clearance or depth observation"
+      },
+      "waterHeightAboveNoaaLwdMeters": 0.251,
+      "waterHeightReferenceQualification": "Same-station Lake Superior source IGLD datum minus separately stated NOAA LWD; not derived water depth or safe navigation clearance",
+      "latest": {
+        "heightMeters": 183.451,
+        "sourceQualityCode": "p",
+        "sourceFlags": "0,0,0,0",
+        "sourceSigma": "0.001"
+      },
+      "sixHourRangeMeters": {
+        "lower": 183.415,
+        "upper": 183.566,
+        "observations": 61
+      },
+      "oneHourChangeMeters": 0.033999999999991815,
+      "source": {
+        "url": "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?begin_date=20261123&end_date=20261123&station=9099064&product=water_level&datum=IGLD&time_zone=gmt&units=metric&format=json&application=561Group",
+        "ni": "ni:///sha-256;iBmilKjPcUabdiLG7ecwO7MDo7onS-pymH3QUjZEfyY",
+        "originalBytes": 9875,
+        "provider": "NOAA National Ocean Service, Center for Operational Oceanographic Products and Services",
+        "rights": {
+          "api": "https://api.tidesandcurrents.noaa.gov/api/prod/",
+          "authority": "https://oceanservice.noaa.gov/disclaimer.html",
+          "notice": "561 Group derived representation; original public NOAA data not claimed as proprietary, and no NOAA endorsement is asserted."
+        },
+        "stationMetadata": {
+          "id": "9099064",
+          "lat": "46.7758",
+          "lon": "-92.092",
+          "name": "Duluth"
+        }
+      }
+    },
+    "metar": {
+      "station": "KDLH",
+      "observedAt": "2026-11-23T11:55:00.000Z",
+      "ageSeconds": 3288.82,
+      "freshness": "recent-observation",
+      "observation": {
+        "at": "2026-11-23T11:55:00.000Z",
+        "precisionF": 0.09,
+        "raw": "KDLH 231155Z 33010KT 9SM -SN BKN017 OVC022 M04/M07 A3024 RMK AO2 SNB18 SLP266 P0000 60001 70001 I6001 T10441072 11017 21050 53021 $",
+        "station": "KDLH",
+        "synoptic": [
+          {
+            "at": "2026-11-23T11:55:00.000Z",
+            "kind": "max6h",
+            "precisionF": 0.09,
+            "temperatureF": 28.94
+          },
+          {
+            "at": "2026-11-23T11:55:00.000Z",
+            "kind": "min6h",
+            "precisionF": 0.09,
+            "temperatureF": 23
+          }
+        ],
+        "temperatureF": 24.08
+      },
+      "source": {
+        "url": "https://tgftp.nws.noaa.gov/data/observations/metar/stations/KDLH.TXT",
+        "ni": "ni:///sha-256;MFKZTcP4SqMBUe-SvszmBq7eZgrp7MuW7WQa7qvEZJc",
+        "originalBytes": 150,
+        "receivedAt": "2026-11-23T12:49:49.003Z",
+        "issuedAt": "2026-11-23T11:55:00.000Z",
+        "freshness": {
+          "bulletinAgeSeconds": 3289.003,
+          "maximumAgeSeconds": 7200,
+          "observedAgeSeconds": 3289.003
+        },
+        "rights": {
+          "authority": "https://www.weather.gov/disclaimer/",
+          "basis": "public-domain US government information",
+          "commercialReuse": "https://www.weather.gov/documentation/services-web-api",
+          "modifications": "561 Group parsed the temperature and converted units; source text is unchanged.",
+          "notice": "561 Group product; no NOAA or NWS endorsement. No copyright is claimed in the original NWS information."
+        }
+      }
+    }
+  },
+  "continuity": {
+    "previousEditionAt": "2026-11-23T01:46:18.078Z",
+    "waterLevelSourceChanged": true,
+    "metarSourceChanged": true
+  },
+  "observedProviderReliability": {
+    "waterLevel": {
+      "observedRuns": 61,
+      "freshAcceptedRuns": 61,
+      "observedFreshFraction": 1,
+      "meaning": "Empirical publication-loop reliability for this specific original NOAA source; no provider SLA or forecasting accuracy"
+    },
+    "metar": {
+      "observedRuns": 61,
+      "freshAcceptedRuns": 61,
+      "observedFreshFraction": 1,
+      "meaning": "Empirical publication-loop reliability for this specific original NOAA source; no provider SLA or forecasting accuracy"
+    },
+    "windowRuns": 61
+  },
+  "rights": "Source data attributed to NOAA/NWS; no endorsement, safety certification or exclusivity is asserted.",
+  "economics": {
+    "newCashExpenseAuthorizedUSD": "0",
+    "separateMarginalComputeCost": "unmeasured",
+    "merchantSettlement": "not-observed-by-this-publication",
+    "independentBuyerDelivery": "not-observed-by-this-publication"
+  }
+}
