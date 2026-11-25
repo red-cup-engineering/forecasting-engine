@@ -1,3 +1,4 @@
+import { semanticHex } from "@red-cup-engineering/semiotic-content-address-system";
 import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import { isEqual } from "@red-cup-engineering/signcell/values";
 /**
@@ -50,7 +51,7 @@ import {createContentTreeStore} from '@red-cup-engineering/computer-file-enginee
 import {walkPosixPaths} from '@red-cup-engineering/computer-file-engine';
 import {hoistRun,unhoistRun} from './weather-run-hoist.mjs';
 import {DERIVED_KIND,sealDerivedRecord,useEvidenceStore,sourceRefName,loadWeatherEvidence,isUsedParameterKey,isUsedForecast,evidenceStore,putEvidenceAlias} from './weather-evidence-record.mjs';
-import {jsonDigest} from './weather-state-tree.mjs';
+
 
 const ID=/^([a-f0-9]{64})\.json\.gz$/u;
 
@@ -140,8 +141,8 @@ export async function migrateWeatherEvidence({root,apply=false,log=()=>{}}={}){
   const report={apply,files:names.length,bytesBefore:0,bytesMigrated:0,derivedMigrated:0,sourcesMigrated:0,left:{},corrupt:[],failed:[]};
   /** put a record as a tree (not yet named); resolves {id,address}. */
   const stage=async record=>{
-    const id=jsonDigest(record),address=await store.put(record);
-    if(jsonDigest(await store.get(address))!==id)throw new Error('content tree did not reproduce a record exactly');
+    const id=semanticHex(record),address=await store.put(record);
+    if(semanticHex(await store.get(address))!==id)throw new Error('content tree did not reproduce a record exactly');
     return {id,address};
   };
   let batch=[];
@@ -186,11 +187,11 @@ export async function migrateWeatherEvidence({root,apply=false,log=()=>{}}={}){
     try{
       if(record&&record.science&&record.sourceEvidenceId&&record.kind===undefined){
         const {dailyExtremes,science,sourceEvidenceId,...input}=record;
-        if(sha256Hex(JSON.stringify(input))!==sourceEvidenceId)throw new Error('derived packet does not contain its source exactly');
+        if(semanticHex(input)!==sourceEvidenceId)throw new Error('derived packet does not contain its source exactly');
         const sourceStaged=await stage(input);
         const run=science.at?hoistRun(science,science.at):{value:science,hoisted:false};
         const historical=await store.put(run.value);
-        if(jsonDigest(await store.get(historical))!==jsonDigest(run.value))throw new Error('content tree did not reproduce the legacy science exactly');
+        if(semanticHex(await store.get(historical))!==semanticHex(run.value))throw new Error('content tree did not reproduce the legacy science exactly');
         const staged=await stage(sealDerivedRecord({sourceEvidenceId,sourceAddress:sourceStaged.address,at:record.at,dailyExtremes,science:{...science,revision:null,outcomesRef:null},historicalScience:historical,historicalHoisted:run.hoisted,supersedes:id}));
         batch.push({id,path,bytes:bytes.length,record,derived:true,staged,sourceStaged,date:String(record.at).slice(0,10)});
       }else if(record&&record.science===undefined&&(record.kind===undefined||record.kind==='kalshi-weather-index-source')){

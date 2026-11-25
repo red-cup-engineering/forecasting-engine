@@ -1,4 +1,4 @@
-import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
+import { semanticHex } from "@red-cup-engineering/semiotic-content-address-system";
 import {adaptiveTemperaturePool} from './weather-family-learning.mjs';
 import {ecmwfStationDistributions} from './weather-ecmwf-ensemble.mjs';
 import {relationalTemperaturePanel,RELATIONAL_REGIONS} from './weather-relational-temperature.mjs';
@@ -9,7 +9,6 @@ import {weatherReadPage} from './weather-read-page.mjs';
 import {readWeatherSourceRecord} from './weather-source-record.mjs';
 import {openTree,readTree,saveTree,importLegacyFile} from './weather-state-tree.mjs';
 import {makeTemperaturePool,postprocessTemperature,temperatureDiagnostics,temperatureDistributionCrps} from './weather-ensemble.mjs';
-const hash=x=>sha256Hex(JSON.stringify(x));
 const key=r=>`${r.station}/${r.model}/${r.horizon}`;
 const cohort=h=>h<=3?'0-3h':h<=6?'3-6h':h<=12?'6-12h':h<=24?'12-24h':'24-48h';
 /** Backwards-compatible single-Student-t scoring, using the same quadrature as ensembles. */
@@ -129,11 +128,11 @@ export async function updateStationScience(evidence,{root,store,now=Date.now(),s
   if(!obs||r.verification==='routine-report-bin'&&(Date.parse(obs.at)<=Date.parse(r.availableAt)||Date.parse(obs.availableAt)<Date.parse(obs.at))){if(now-valid>72*3600000){delete state.pending[id];state.missingOutcomes++;}continue;}
   const error=obs.temperatureF-r.meanF,k=key(r),dk=k+'/'+r.date;
   const d=state.history[dk]??={key:k,station:r.station,model:r.model,horizon:r.horizon,date:r.date,truth:r.truth??'NWS station observations',verification:r.verification,discrete:Boolean(r.empirical||r.mixture?.components?.some(c=>c.empirical)),n:0,errorSum:0,error2Sum:0,z2Sum:0,absSum:0,crpsSum:0,covered90:0};
-  const diagnostics=temperatureDiagnostics(r,obs.temperatureF,{tieUniform:parseInt(hash({id,pitSeed:'pre-outcome-pit-v1'}).slice(0,8),16)/4294967296}),crps=diagnostics.crpsF;d.n++;d.errorSum+=error;d.error2Sum+=error*error;d.z2Sum+=(error/r.scaleF)**2;d.absSum+=Math.abs(error);d.crpsSum+=crps;d.covered90+=diagnostics.covered90?1:0;
+  const diagnostics=temperatureDiagnostics(r,obs.temperatureF,{tieUniform:parseInt(semanticHex({id,pitSeed:'pre-outcome-pit-v1'}).slice(0,8),16)/4294967296}),crps=diagnostics.crpsF;d.n++;d.errorSum+=error;d.error2Sum+=error*error;d.z2Sum+=(error/r.scaleF)**2;d.absSum+=Math.abs(error);d.crpsSum+=crps;d.covered90+=diagnostics.covered90?1:0;
   d.diagnosticSamples=(d.diagnosticSamples??0)+1;d.pitSum=(d.pitSum??0)+diagnostics.pit;d.pit2Sum=(d.pit2Sum??0)+diagnostics.pit**2;d.pitBins??=Array(10).fill(0);d.pitBins[Math.min(9,Math.floor(diagnostics.pit*10))]++;
   const comparisonComposition=r.mixture?.kind==='empirical-generated-learner-pool-v1'?'frozen-six-learner-past-only-selector-v1':r.composition;
   for(const component of new Map([...(r.mixture?.components??[]),...(r.comparators??[])].map(c=>[c.model,c])).values()){
-   const pairKey=hash({station:r.station,pool:r.model,component:component.model,horizon:r.horizon,composition:comparisonComposition,configurationVersion:r.details?.configVersion??null,truth:r.truth??'NWS station observations'}),dayKey=pairKey+'/'+r.date;
+   const pairKey=semanticHex({station:r.station,pool:r.model,component:component.model,horizon:r.horizon,composition:comparisonComposition,configurationVersion:r.details?.configVersion??null,truth:r.truth??'NWS station observations'}),dayKey=pairKey+'/'+r.date;
    const paired=state.comparisons[dayKey]??={key:pairKey,station:r.station,pool:r.model,component:component.model,family:component.family,horizon:r.horizon,composition:comparisonComposition,configurationVersion:r.details?.configVersion??null,truth:r.truth??'NWS station observations',date:r.date,n:0,gainSum:0};
    paired.scoreAvailableAt=new Date(now).toISOString();paired.sourceEvidenceId=sourceEvidenceId;paired.n++;paired.gainSum+=temperatureDistributionCrps({...component,weight:1},obs.temperatureF)-crps;
   }
@@ -144,7 +143,7 @@ export async function updateStationScience(evidence,{root,store,now=Date.now(),s
  const parameters=fit(state.history);
  state.at=new Date(now).toISOString();
  const forecasts=stationPointForecasts(evidence,{now,parameters,learningState:state});
- for(const r of forecasts){const id=hash({station:r.station,model:r.model,horizon:r.horizon,validTime:r.validTime});if(state.pending[id])continue;state.pending[id]={...r,sourceEvidenceId};forecasted++;}
+ for(const r of forecasts){const id=semanticHex({station:r.station,model:r.model,horizon:r.horizon,validTime:r.validTime});if(state.pending[id])continue;state.pending[id]={...r,sourceEvidenceId};forecasted++;}
  state.at=new Date(now).toISOString();
  const revision=await saveTree(store,SCIENCE_REF,clustered(state));
  const outcomesRef=outcomes.length?{address:await store.put(outcomes),count:outcomes.length}:null;

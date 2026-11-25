@@ -1,3 +1,4 @@
+import { semanticHex } from "@red-cup-engineering/semiotic-content-address-system";
 /**
  * Aged derived weather records leave the host as one verified file a day (specification: the file section's
  * content-tree-archive.md, CA8 to CA10).
@@ -19,7 +20,7 @@ import {mkdir,rm,stat} from 'node:fs/promises';
 import {join} from 'node:path';
 import {createContentTreeStore} from '@red-cup-engineering/computer-file-engineering-services-section/content-tree-store';
 import {evidenceStore,AGED_INDEX_REF,readAgedIndex,ARCHIVED_KIND} from './weather-evidence-record.mjs';
-import {jsonDigest,readTree,saveTree} from './weather-state-tree.mjs';
+import {readTree,saveTree} from './weather-state-tree.mjs';
 
 export const ARCHIVE_INDEX_REF='weather/archive-index';
 const DAY=86400000,DAY_TEXT=/^\d{4}-\d{2}-\d{2}$/u;
@@ -40,7 +41,7 @@ async function verifyArchive({root,day,file,sha256,expected,nodes}){
     if(fsck.damaged.length||fsck.missing.length||fsck.nodes!==nodes)throw new Error(`archive ${day} is not complete: ${fsck.nodes} of ${nodes} nodes, ${fsck.damaged.length} damaged, ${fsck.missing.length} missing`);
     for(const [ref,address] of Object.entries(expected)){
       if(await scratch.getRef(ref)!==address)throw new Error(`archive ${day} does not name ${ref} as the store does`);
-      if(jsonDigest(await scratch.get(address))!==jsonDigest(await evidenceStore(root).get(address)))throw new Error(`archive ${day} does not reproduce ${ref} exactly`);
+      if(semanticHex(await scratch.get(address))!==semanticHex(await evidenceStore(root).get(address)))throw new Error(`archive ${day} does not reproduce ${ref} exactly`);
     }
   }finally{await rm(scratchRoot,{recursive:true,force:true});}
 }

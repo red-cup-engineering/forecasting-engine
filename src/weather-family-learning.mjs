@@ -1,7 +1,6 @@
 /** Past-only matched-date switching-experts adaptation (Herbster–Warmuth fixed-share).\n * Physical forecasts remain distinct from market settlement and execution. */
-import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
+import { semanticHex } from "@red-cup-engineering/semiotic-content-address-system";
 import {makeTemperaturePool} from './weather-ensemble.mjs';
-const hash=x=>sha256Hex(JSON.stringify(x));
 /** Scientific identity: Lenticule Climate Science 2026-10-14
  * source-bound-hourly-temperature-forecast-science, section 3.
  * One matched TARGET DATE is one score update; it is never 5-minute pseudo-replication.
@@ -51,5 +50,5 @@ export function adaptiveTemperaturePool(base,state,{now=Date.now()}={}){
  const weights=fixedShareFamilyWeights(families,dailyLosses);
  const pool=makeTemperaturePool(components,{familyWeights:weights});if(!pool)return null;
  const witnesses=matched.map(([date,day])=>({date,samples:day.get(families[0]).n,components:families.map(f=>{const r=day.get(f);return {family:f,model:r.component,gainSumF:r.gainSum,scoreAvailableAt:r.scoreAvailableAt??state.at,sourceEvidenceId:r.sourceEvidenceId??null};})}));
- return {...base,...pool,model:base.model+'/paired-family-fixed-share-v2',tradeEligible:false,comparators:[{...base,comparators:undefined}],learning:{...FAMILY_LEARNING_PROTOCOL,weights,regularizedMeanComponentExcessCrpsF:gains,matchedDates:matched.length,matchedSamples:matched.reduce((s,[,day])=>s+day.get(families[0]).n,0),fitAvailableAt:new Date(now).toISOString(),outcomeReceiptBoundAt:Number.isFinite(received)&&received<=now?state.at:null,sourceDigest:hash(witnesses),witnesses,status:'forward fixed-share experiment; matched scored dates only; eta and switching share untrained; no source, calibration, regret, market-edge or profit claim'},details:{...base.details,...pool,mean:pool.meanF,scale:pool.scaleF,status:'past-only scored-date fixed-share mixture; physical and market skill unproven'}};
+ return {...base,...pool,model:base.model+'/paired-family-fixed-share-v2',tradeEligible:false,comparators:[{...base,comparators:undefined}],learning:{...FAMILY_LEARNING_PROTOCOL,weights,regularizedMeanComponentExcessCrpsF:gains,matchedDates:matched.length,matchedSamples:matched.reduce((s,[,day])=>s+day.get(families[0]).n,0),fitAvailableAt:new Date(now).toISOString(),outcomeReceiptBoundAt:Number.isFinite(received)&&received<=now?state.at:null,sourceDigest:semanticHex(witnesses),witnesses,status:'forward fixed-share experiment; matched scored dates only; eta and switching share untrained; no source, calibration, regret, market-edge or profit claim'},details:{...base.details,...pool,mean:pool.meanF,scale:pool.scaleF,status:'past-only scored-date fixed-share mixture; physical and market skill unproven'}};
 }

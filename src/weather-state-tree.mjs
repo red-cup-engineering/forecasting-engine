@@ -1,3 +1,4 @@
+import { semanticHex } from "@red-cup-engineering/semiotic-content-address-system";
 /**
  * Mutable weather state kept as content trees.
  *
@@ -21,7 +22,6 @@ import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system"
 import {removeFile} from '@red-cup-engineering/computer-file-engineering-services-section/remove-file';
 import {readFileText} from '@red-cup-engineering/computer-file-engineering-services-section/read-file';
 
-export const jsonDigest=value=>sha256Hex(JSON.stringify(value));
 const slots=new WeakMap();
 const slotsOf=store=>{if(!slots.has(store))slots.set(store,new Map());return slots.get(store);};
 
@@ -53,7 +53,7 @@ export async function importLegacyFile({store,ref,path,wrap=value=>value}){
   try{text=await readFileText(path);}catch(error){if(error.code==='ENOENT')return null;throw error;}
   const value=wrap(JSON.parse(text));
   const address=await store.put(value);
-  if(jsonDigest(await store.get(address))!==jsonDigest(value))throw new Error(`${path} was not reproduced by its tree; file kept`);
+  if(semanticHex(await store.get(address))!==semanticHex(value))throw new Error(`${path} was not reproduced by its tree; file kept`);
   await store.setRef(ref,address);
   await removeFile({path});
   return address;

@@ -1,3 +1,4 @@
+import { semanticHex } from "@red-cup-engineering/semiotic-content-address-system";
 /**
  * Weather evidence records: each input is stored once, derivations are stored as what is new
  * plus references to what they were derived from.
@@ -79,7 +80,7 @@ import {join} from 'node:path';
 import {readdir} from 'node:fs/promises';
 import {createContentTreeStore,contentTreeLink} from '@red-cup-engineering/computer-file-engineering-services-section/content-tree-store';
 import {scienceStateAt,stationScienceReport,stationPointForecasts} from './station-weather-science.mjs';
-import {jsonDigest,readTree,saveTree} from './weather-state-tree.mjs';
+import {readTree,saveTree} from './weather-state-tree.mjs';
 
 export const DERIVED_KIND='kalshi-weather-derived';
 export const isUsedParameterKey=key=>key.startsWith('index:')||key.includes('/lamp-hourly-v2.7-v1/');
@@ -150,11 +151,11 @@ export function sealDerivedRecord({sourceEvidenceId,sourceAddress,at,dailyExtrem
  * ({source:true}) is named only by its dated, weak-retention ref; every other record by evidence/<id>.
  */
 export async function putEvidence(root,record,{source=false}={}){
-  const id=jsonDigest(record),store=evidenceStore(root),ref=source?sourceRefName(recordDate(record.at),id):'evidence/'+id;
+  const id=semanticHex(record),store=evidenceStore(root),ref=source?sourceRefName(recordDate(record.at),id):'evidence/'+id;
   const have=await store.getRef(ref);
   if(have)return {id,address:have,ref};
   const address=await store.put(record);
-  if(jsonDigest(await store.get(address))!==id)throw new Error('content tree did not reproduce the evidence record exactly');
+  if(semanticHex(await store.get(address))!==id)throw new Error('content tree did not reproduce the evidence record exactly');
   await store.setRef(ref,address);
   return {id,address,ref};
 }
@@ -185,7 +186,7 @@ async function readStored(root,id,dateHint){
   const store=evidenceStore(root),address=await store.getRef('evidence/'+id)??await sourceAddress(root,id,dateHint);
   if(!address)return null;
   const record=await store.get(address);
-  if(jsonDigest(record)!==id)throw new TypeError('weather archive source hash mismatch');
+  if(semanticHex(record)!==id)throw new TypeError('weather archive source hash mismatch');
   return {record,address};
 }
 async function readFileRecord(root,id){
@@ -207,7 +208,7 @@ export async function readEvidenceRecord({root,evidenceId,dateHint}){
   const record=await store.get(address);
   if(record?.kind===ARCHIVED_KIND&&record.evidenceId===evidenceId)throw Object.assign(new Error(`weather evidence ${evidenceId} is archived in ${record.archive} (day ${record.day}, sha256 ${record.sha256}); restore it with restoreArchive or apps/weather-archive.mjs --restore ${record.day}`),{code:'WEATHER_EVIDENCE_ARCHIVED',day:record.day,archive:record.archive,sha256:record.sha256});
   if(record?.supersedes!==evidenceId)throw new TypeError('weather evidence alias does not name its predecessor');
-  return {record,address,id:jsonDigest(record),requested:evidenceId};
+  return {record,address,id:semanticHex(record),requested:evidenceId};
 }
 
 async function listFiles(dir){
@@ -302,7 +303,7 @@ export async function ageDerived({root,now=Date.now(),workingWindowDays,limit=20
     const record=await store.get(address);
     if(record?.kind!==DERIVED_KIND||record.version!==3||!record.scienceState){delete index[id];continue;}
     const slim=ageDerivedRecord(record,id),slimAddress=await store.put(slim);
-    if(jsonDigest(await store.get(slimAddress))!==jsonDigest(slim))throw new Error('content tree did not reproduce the aged record exactly');
+    if(semanticHex(await store.get(slimAddress))!==semanticHex(slim))throw new Error('content tree did not reproduce the aged record exactly');
     await store.setRef('alias/'+id,slimAddress);await store.deleteRef('evidence/'+id);
     agedIndex[id]=record.at;delete index[id];aged++;
   }
@@ -336,7 +337,7 @@ export async function loadWeatherEvidence({root,evidenceId,detail='used',dateHin
   const store=evidenceStore(root),address=typeof record.inputs==='string'?record.inputs:record.inputs['/'];
   if(!await store.has(address))throw Object.assign(new Error(`the source ${record.sourceEvidenceId} of weather evidence ${evidenceId} has aged out`),{code:'WEATHER_SOURCE_AGED_OUT'});
   const source=await store.get(address);
-  if(jsonDigest(source)!==record.sourceEvidenceId)throw new TypeError('derived weather record does not name the source it references');
+  if(semanticHex(source)!==record.sourceEvidenceId)throw new TypeError('derived weather record does not name the source it references');
   const hoisted=record.version>=3&&record.science.forecastsHoisted;
   const science=detail==='full'?await fullScience(root,record,source):{
     at:record.science.at,
