@@ -33,7 +33,7 @@ export function defaultBackends(env = process.env) {
   ];
 }
 
-export const fingerprint = () => ({ host: hostname(), cpu: cpus()[0]?.model ?? 'unknown', threads: availableParallelism() });
+export const machineProfile = () => ({ host: hostname(), cpu: cpus()[0]?.model ?? 'unknown', threads: availableParallelism() });
 const freeCores = () => Math.max(1, availableParallelism() - loadavg()[0]);
 const ms = (f) => { const t = performance.now(); return Promise.resolve(f()).then((r) => [r, performance.now() - t]); };
 
@@ -41,7 +41,7 @@ export function createPlanner({ backends = defaultBackends(), cachePath = defaul
   const byId = new Map(backends.map((b) => [b.id, b]));
   const tol = { ...DEFAULT_TOLERANCE, ...tolerance };
   const warm = new Set(); const failed = new Map(); const refs = new Map();
-  let cache = { schema: 1, fingerprint: fingerprint(), entries: {} };
+  let cache = { schema: 1, fingerprint: machineProfile(), entries: {} };
   try { const c = JSON.parse(readFileSync(cachePath, 'utf8')); if (c.schema === 1 && JSON.stringify(c.fingerprint) === JSON.stringify(cache.fingerprint)) cache = c; } catch { /* no cache */ }
   const save = () => { if (!cachePath) return; try { mkdirSync(dirname(cachePath), { recursive: true }); writeFileSync(cachePath, `${JSON.stringify(cache, null, 1)}\n`); } catch { /* read-only cache dir */ } };
 

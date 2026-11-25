@@ -29,8 +29,8 @@ for (const station of Object.keys(stations)) {
   cli[station] = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : [];
 }
 const models = buildDailyModels({ stations, cli, rows, from: first, to: last });
-const digest = (path) => (existsSync(path) ? `sha256:${sha256Hex(readFileSync(path))}` : null);
-const sources = Object.keys(stations).map((station) => ({ station, minuteRows: rows[station].t.length, metarReports: rows[station].metar.length, cliSha256: digest(join(dataDir, 'cli', `${station}.json`)), metarSha256: digest(join(dataDir, 'metar', `${station}.csv`)) }));
+const sourceFileSha256 = (path) => (existsSync(path) ? `sha256:${sha256Hex(readFileSync(path))}` : null);
+const sources = Object.keys(stations).map((station) => ({ station, minuteRows: rows[station].t.length, metarReports: rows[station].metar.length, cliSha256: sourceFileSha256(join(dataDir, 'cli', `${station}.json`)), metarSha256: digest(join(dataDir, 'metar', `${station}.csv`)) }));
 const config = { kind: 'daily-extreme-discrepancy', version: 1, window: { firstDay: first, lastDayExclusive: last }, derivedAt: new Date().toISOString(), stations: Object.keys(stations).length, sources, ...models };
 const text = `${JSON.stringify(config)}\n`;
 if (out) writeFileSync(out, text); else process.stdout.write(text);

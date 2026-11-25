@@ -1,4 +1,4 @@
-import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
+import { sha256Hex, semanticHex } from "@red-cup-engineering/semiotic-content-address-system";
 import {ecmwfStationDistributions} from './weather-ecmwf-ensemble.mjs';
 import {readFileSync} from 'node:fs';
 import {innovationWeight} from './weather-index-innovation.mjs';
@@ -77,8 +77,8 @@ export function weatherIndexContractScope(contract,evidence,now){
   return {...contract,indexMethodologyBlocker,blocker:independentBlocker??indexMethodologyBlocker};
  }
  const document=packet.methodology,law={city:b.city,methodologyBodyNI:'ni:///sha-256;'+Buffer.from(document.sha256,'hex').toString('base64url'),methodologySha256:document.sha256,configurationVersion:configuration.config_version,cityReferenceC:configuration.city_reference_c,stations:configuration.stations.map(s=>({stationId:s.station_id,weight:s.weight,offsetC:s.offset_c})).sort((a,b)=>a.stationId.localeCompare(b.stationId)),quorum:{members:document.quorum.members,weight:document.quorum.weight},precisionF:document.precisionF,roundingTieRule:document.roundingTieRule};
- const lawId=sha256Hex(JSON.stringify(law)),baseRuleKey=contract.indexLaw?.baseRuleKey??contract.ruleKey;
- const ruleKey=sha256Hex(JSON.stringify({baseRuleKey,indexLaw:lawId}));
+ const lawId=semanticHex(law),baseRuleKey=contract.indexLaw?.baseRuleKey??contract.ruleKey;
+ const ruleKey=semanticHex({baseRuleKey,indexLaw:lawId});
  return {...contract,ruleKey,indexMethodologyBlocker:null,blocker:contract.blocker===contract.indexMethodologyBlocker?null:contract.blocker??null,indexLaw:{id:lawId,baseRuleKey,...law}};
 }
 export function indexConfiguration(packet,city,eventTime,availableAt){

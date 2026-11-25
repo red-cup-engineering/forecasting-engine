@@ -1,9 +1,8 @@
-import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
+import { semanticHex } from "@red-cup-engineering/semiotic-content-address-system";
 import {weatherIndexBinding} from './weather-index.mjs';
 import { temperatureSeries } from './temperature-market-model.mjs';
 import { eventDate } from './market-outcome.mjs';
 import { rainCityCode, rainCity } from './rain-market-model.mjs';
-export const digest = value => sha256Hex(JSON.stringify(value));
 export async function mapLimit(rows, limit, fn) {
   const out = new Array(rows.length); let next = 0;
   await Promise.all(Array.from({length: Math.min(limit, rows.length)}, async () => {
@@ -18,7 +17,7 @@ export function weatherRuleKey(market,seriesTicker,source,station) {
     .replace(/((?:greater than|less than|above|below)\s+)-?\d+(?:\.\d+)?(?=°| inches)/gi,'$1{strike}')
     .replace(/(between\s+)-?\d+(?:\.\d+)?--?\d+(?:\.\d+)?(?=°)/gi,'$1{range}')
     .replace(/\s+/g,' ').trim();
-  return digest({series:seriesTicker,source,station,strike:market.strike_type,template});
+  return semanticHex({series:seriesTicker,source,station,strike:market.strike_type,template});
 }
 /** The controlling contract clause governs, not warnings mentioning other providers.
  * In September 2026 some hourly series changed publisher; never infer source
@@ -56,7 +55,7 @@ export function weatherContract(market, series) {
     if (city && date && stationRule === city.cli && source === 'twc' && /strictly greater than 0 inches/i.test(rules)) binding = {...city, timeZone:city.zone, targetDate:date, source, kind:'rain', climateReport:city.cli, proxy:true};
   } else if (series.frequency === 'hourly' && family === 'temperature') {family = 'hourly-temperature';binding=weatherIndexBinding(market,series);}
   const baseRuleKey = weatherRuleKey(market,series.ticker,source,stationRule);
-  const ruleKey=binding?.kind==='index-at'?digest({baseRuleKey,methodology:binding.methodologyUrl}):baseRuleKey;
+  const ruleKey=binding?.kind==='index-at'?semanticHex({baseRuleKey,methodology:binding.methodologyUrl}):baseRuleKey;
   return {...market, seriesTicker:series.ticker, feeType:series.fee_type, feeMultiplier:series.fee_multiplier, family, source, stationRule, binding, ruleKey,
     blocker: binding ? null : !source ? 'settlement source is not bound' : `${family}: station, measurement window and validated model need binding`};
 }

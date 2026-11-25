@@ -1,6 +1,7 @@
-import {mapLimit,digest} from './weather-universe.mjs';
+import {semanticHex} from '@red-cup-engineering/semiotic-content-address-system';
+import {mapLimit} from './weather-universe.mjs';
 export const TWC_KALSHI='https://weather.com/kalshi';
-async function get(path,fetchImpl){const source=TWC_KALSHI+path;const r=await fetchImpl(source,{signal:AbortSignal.timeout(15000)});if(!r.ok)throw new Error(`TWC ${r.status}: ${source}`);const data=await r.json();return {source,receivedAt:new Date().toISOString(),evidenceDigest:digest(data),data};}
+async function get(path,fetchImpl){const source=TWC_KALSHI+path;const r=await fetchImpl(source,{signal:AbortSignal.timeout(15000)});if(!r.ok)throw new Error(`TWC ${r.status}: ${source}`);const data=await r.json();return {source,receivedAt:new Date().toISOString(),evidenceDigest:semanticHex(data),data};}
 /** Read the same public report endpoints that weather.com/kalshi's own client uses. */
 export async function climateReportEvidence({dates:requestedDates=[],now=Date.now(),fetchImpl=fetch}={}){
  const utcDate=new Date(now).toISOString().slice(0,10);
