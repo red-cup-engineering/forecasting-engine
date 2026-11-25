@@ -1,8 +1,8 @@
+import { sha256Hex, makeNiUri } from "@red-cup-engineering/semiotic-content-address-system";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { gunzipSync } from 'node:zlib';
-import { createHash } from 'node:crypto';
-import { makeNiUri } from "@red-cup-engineering/uri-engineering-services-section/ni-uri";
+
 
 /** One byte-exact read shared by the new bounded views, never a new store. */
 export async function readWeatherSourceRecord({ root, file, label = file, emptyRecord = {}, sourceRevision } = {}) {
@@ -15,7 +15,7 @@ export async function readWeatherSourceRecord({ root, file, label = file, emptyR
     present = false;
   }
   const decoded = present && archive ? gunzipSync(bytes) : bytes;
-  if (present && archive && createHash('sha256').update(decoded).digest('hex') !== archive[1]) throw new TypeError('weather archive source hash mismatch');
+  if (present && archive && sha256Hex(decoded) !== archive[1]) throw new TypeError('weather archive source hash mismatch');
   const record = present ? JSON.parse(decoded.toString("utf8")) : emptyRecord;
   if (record === null || typeof record !== "object" || Array.isArray(record)) throw new TypeError("weather source must contain one JSON record");
   if (record.at !== undefined && record.at !== null && (typeof record.at !== "string" || record.at.length > 128)) throw new TypeError("weather source at must be a bounded string or absent");

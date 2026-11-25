@@ -1,3 +1,4 @@
+import { sha256Hex, makeNiUri } from "@red-cup-engineering/semiotic-content-address-system";
 import {readNwsResponse,readNwsJson} from './nws-source.mjs';
 /**
  * A station's temperature extremes so far in its climate day, from the NWS
@@ -18,11 +19,10 @@ import {readNwsResponse,readNwsJson} from './nws-source.mjs';
  * at least the highest LOWER end of any reading, so the report's whole-degree
  * high is at least that rounded; the minimum mirrors it.
  */
-import {createHash} from 'node:crypto';
 import {gzipSync} from 'node:zlib';
 import {precipitationWitnesses} from './weather-precipitation.mjs';
 import { readBody } from '@red-cup-engineering/http-engineering-services-section/body/web';
-import { makeNiUri } from '@red-cup-engineering/uri-engineering-services-section/ni-uri';
+
 import { admitCanonicalJson, JSON_RESOURCE_ENVELOPE } from '@red-cup-engineering/json-engine/canonical-json';
 
 export const NWS_API = 'https://api.weather.gov';
@@ -97,7 +97,7 @@ export async function observedExtremes({ station, date, timeZone, now = Date.now
     const rawBytes=await readBody({body:res.body,headers:res.headers,signal},{maxBytes:JSON_RESOURCE_ENVELOPE.maxSourceBytes,decodeContentEncoding:false});
     const page=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(rawBytes)),receivedAt=new Date().toISOString();
     if(!page||!Array.isArray(page.features))throw new Error('station-observations: GeoJSON feature page required');
-    pages.push({url:pageUrl.href,receivedAt,transport:{attempts:acquired.attempts,rateLimits:acquired.rateLimits},identity:makeNiUri(rawBytes),sha256:createHash('sha256').update(rawBytes).digest('hex'),bytes:rawBytes.byteLength,encoding:'gzip-base64',body:gzipSync(rawBytes).toString('base64'),packet:page});
+    pages.push({url:pageUrl.href,receivedAt,transport:{attempts:acquired.attempts,rateLimits:acquired.rateLimits},identity:makeNiUri(rawBytes),sha256:sha256Hex(rawBytes),bytes:rawBytes.byteLength,encoding:'gzip-base64',body:gzipSync(rawBytes).toString('base64'),packet:page});
     // NWS's `next` link keeps only a cursor: it drops `limit` (the next page then returns the default 500
     // records, over 1 MiB) and ignores `start`/`end`, walking backward in time. Carry the limit above, and
     // stop once a page reaches the start of the climate day.

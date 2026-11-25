@@ -40,7 +40,6 @@ import { isEqual } from "@red-cup-engineering/signcell/values";
 import {createReadStream} from 'node:fs';
 import {createInterface} from 'node:readline';
 import {gunzipSync,inflateRawSync} from 'node:zlib';
-import {createHash} from 'node:crypto';
 import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {readFileBytes,readFileText} from '@red-cup-engineering/computer-file-engineering-services-section/read-file';

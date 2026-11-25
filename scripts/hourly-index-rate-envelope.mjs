@@ -11,9 +11,9 @@
  * pairs were seen. A strike farther from the latest reading than the envelope allows cannot be
  * reached in the time left unless the index moves further than it has in the whole window.
  */
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import {mkdir,readFile,writeFile,access} from 'node:fs/promises';
 import {join} from 'node:path';
-import {createHash} from 'node:crypto';
 import {INDEX_CITIES} from '../src/weather-index.mjs';
 
 const MINUTE=60000,DAY=86400000,API='https://api.elections.kalshi.com/trade-api/v2/live_data/weather';
@@ -36,7 +36,7 @@ export async function cityMinutes(cacheDir,city,start,end){
   if(!await exists(file))await writeFile(file,await original(url),{flag:'wx'});
   const bytes=await readFile(file),body=JSON.parse(bytes);
   if(body.city!==city||!Array.isArray(body.timeseries))throw new TypeError('original Kalshi city index response required: '+file);
-  sources.push({url,sha256:createHash('sha256').update(bytes).digest('hex'),bytes:bytes.length,configVersion:body.config_version});
+  sources.push({url,sha256:sha256Hex(bytes),bytes:bytes.length,configVersion:body.config_version});
   for(const row of body.timeseries){
    if(row?.status!=='normal'||!Number.isSafeInteger(row.t)||row.t%MINUTE!==0||!Number.isFinite(row.v))continue;
    if(row.t>=day&&row.t<day+DAY)minutes.set(row.t,row.v);

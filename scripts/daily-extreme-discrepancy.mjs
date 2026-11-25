@@ -9,9 +9,9 @@
  * confirmed observed extreme (two consecutive five-minute readings), and the report's precipitation against the gauge's total.
  * The output is the table weather-extreme-discrepancy.mjs bounds a claim with.
  */
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { createHash } from 'node:crypto';
 import { loadStation, buildDailyModels } from '../src/weather-daily-observations.mjs';
 
 const [dataDir, first, last, out] = process.argv.slice(2);
@@ -29,7 +29,7 @@ for (const station of Object.keys(stations)) {
   cli[station] = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : [];
 }
 const models = buildDailyModels({ stations, cli, rows, from: first, to: last });
-const digest = (path) => (existsSync(path) ? `sha256:${createHash('sha256').update(readFileSync(path)).digest('hex')}` : null);
+const digest = (path) => (existsSync(path) ? `sha256:${sha256Hex(readFileSync(path))}` : null);
 const sources = Object.keys(stations).map((station) => ({ station, minuteRows: rows[station].t.length, metarReports: rows[station].metar.length, cliSha256: digest(join(dataDir, 'cli', `${station}.json`)), metarSha256: digest(join(dataDir, 'metar', `${station}.csv`)) }));
 const config = { kind: 'daily-extreme-discrepancy', version: 1, window: { firstDay: first, lastDayExclusive: last }, derivedAt: new Date().toISOString(), stations: Object.keys(stations).length, sources, ...models };
 const text = `${JSON.stringify(config)}\n`;

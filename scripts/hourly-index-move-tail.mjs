@@ -12,9 +12,9 @@
  * provenance is recorded in the output (`method.parameters`), and the block length, regime count and cuts are derived from the minutes read. The table replaces
  * weather-index-rate-envelope.json's "largest move ever seen times 1.5" with a probability that can be priced.
  */
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { createHash } from 'node:crypto';
 import { INDEX_CITIES } from '../src/weather-index.mjs';
 import { fitMoveTable, PARAMETERS } from '../src/weather-index-move-tail.mjs';
 
@@ -28,7 +28,7 @@ export function cityMinutes(indexDir, city, start, end) {
     if (day < start || day >= end) continue;
     const bytes = readFileSync(join(indexDir, city, name)), body = JSON.parse(bytes);
     if (body.city !== city || !Array.isArray(body.timeseries)) throw new TypeError(`original Kalshi city index response required: ${name}`);
-    sources.push({ file: name, sha256: createHash('sha256').update(bytes).digest('hex'), bytes: bytes.length, configVersion: body.config_version });
+    sources.push({ file: name, sha256: sha256Hex(bytes), bytes: bytes.length, configVersion: body.config_version });
     for (const row of body.timeseries) if (Number.isSafeInteger(row.t) && row.t % 60_000 === 0 && Number.isFinite(row.v) && row.t >= day && row.t < day + DAY) minutes.set(row.t, row.v);
   }
   return { minutes, sources };

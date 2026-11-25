@@ -17,11 +17,11 @@
  *   importLegacyFile moves a pre-tree JSON file into a ref: put, read back, compare the JSON
  *   digest, name it, and only then remove the file.
  */
-import {createHash} from 'node:crypto';
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import {removeFile} from '@red-cup-engineering/computer-file-engineering-services-section/remove-file';
 import {readFileText} from '@red-cup-engineering/computer-file-engineering-services-section/read-file';
 
-export const jsonDigest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
+export const jsonDigest=value=>sha256Hex(JSON.stringify(value));
 const slots=new WeakMap();
 const slotsOf=store=>{if(!slots.has(store))slots.set(store,new Map());return slots.get(store);};
 

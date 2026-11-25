@@ -70,11 +70,11 @@
  *     pending, all parameters, missingOutcomes, every forecast and the outcomes, as before,
  *     re-derived from scienceState; for a migrated record it is the historicalScience tree.
  */
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import {readFileBytes} from '@red-cup-engineering/computer-file-engineering-services-section/read-file';
 import {walkPosixPaths} from '@red-cup-engineering/computer-file-engine';
 import {hoistRun,unhoistRun} from './weather-run-hoist.mjs';
 import {gunzipSync} from 'node:zlib';
-import {createHash} from 'node:crypto';
 import {join} from 'node:path';
 import {readdir} from 'node:fs/promises';
 import {createContentTreeStore,contentTreeLink} from '@red-cup-engineering/computer-file-engineering-services-section/content-tree-store';
@@ -193,7 +193,7 @@ async function readFileRecord(root,id){
   try{bytes=await readFileBytes(join(root,'evidence',`${id}.json.gz`));}
   catch(e){if(e.code==='ENOENT')return null;throw e;}
   const decoded=gunzipSync(bytes);
-  if(createHash('sha256').update(decoded).digest('hex')!==id)throw new TypeError('weather archive source hash mismatch');
+  if(sha256Hex(decoded)!==id)throw new TypeError('weather archive source hash mismatch');
   return {record:JSON.parse(decoded.toString('utf8')),address:null};
 }
 

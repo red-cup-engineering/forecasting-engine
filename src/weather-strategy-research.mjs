@@ -1,7 +1,7 @@
 /** Empirical learner generation and concurrent research/market strategy study.
  * Numeric learners, epistemic witnesses and economic simulations remain distinct.
  * This is a bounded learner-generating learner, not autonomous LLM code evolution. */
-import {createHash} from 'node:crypto';
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import {collectRelationalTemperatureScience,parseRelationalTemperatureCsv,replayRelationalTemperature,RELATIONAL_REGIONS} from './weather-relational-temperature.mjs';
 const DAY=86400000,mean=a=>a.reduce((s,v)=>s+v,0)/a.length;
 const key=r=>r.station+'/'+r.issuedAt;
@@ -104,5 +104,5 @@ export function discoverWeatherLearners(reading,{stations,specifications=WEATHER
 }
 export async function collectWeatherStrategyResearch({region='nyc',now=Date.now(),fetchImpl=fetch}={}){
  const sourcePacket=await collectRelationalTemperatureScience({region,now,fetchImpl}),stations=RELATIONAL_REGIONS[region],reading=parseRelationalTemperatureCsv(sourcePacket.rawSource,{stations,availableAt:sourcePacket.source.availableAt,sourceId:sourcePacket.source.sha256});
- const study=discoverWeatherLearners(reading,{stations});return {at:new Date().toISOString(),kind:study.kind,region,stations:sourcePacket.stations,source:sourcePacket.source,rawSource:sourcePacket.rawSource,study,studyId:createHash('sha256').update(JSON.stringify({source:sourcePacket.source.sha256,specifications:study.specifications,algorithm:'nested-past-only-generators-v1',competition:{halfSpread:.01,feePerContract:.01,minEdge:.02}})).digest('hex'),orderEffect:false};
+ const study=discoverWeatherLearners(reading,{stations});return {at:new Date().toISOString(),kind:study.kind,region,stations:sourcePacket.stations,source:sourcePacket.source,rawSource:sourcePacket.rawSource,study,studyId:sha256Hex(JSON.stringify({source:sourcePacket.source.sha256,specifications:study.specifications,algorithm:'nested-past-only-generators-v1',competition:{halfSpread:.01,feePerContract:.01,minEdge:.02}})),orderEffect:false};
 }

@@ -1,7 +1,7 @@
 /** Past-only matched-date switching-experts adaptation (Herbster–Warmuth fixed-share).\n * Physical forecasts remain distinct from market settlement and execution. */
-import {createHash} from 'node:crypto';
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import {makeTemperaturePool} from './weather-ensemble.mjs';
-const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
+const hash=x=>sha256Hex(JSON.stringify(x));
 /** Scientific identity: Lenticule Climate Science 2026-10-14
  * source-bound-hourly-temperature-forecast-science, section 3.
  * One matched TARGET DATE is one score update; it is never 5-minute pseudo-replication.

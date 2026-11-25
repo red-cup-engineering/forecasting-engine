@@ -3,7 +3,7 @@
  * Carrier: routine near-surface air-temperature reports, with station/time/unit.
  * Transformation: temporal/spatial differences -> next reporting-bin increment.
  * This is neither an identification of FOUR with probability nor a H1 theorem. */
-import {createHash} from 'node:crypto';
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import {readIemTemperatureCsv} from './iem-temperature-source.mjs';
 export const RELATIONAL_REGIONS=Object.freeze({nyc:['JFK','LGA','EWR','HPN'],miami:['MIA','FLL','OPF']});
 const HOUR=3600000,DAY=24*HOUR;
@@ -191,7 +191,7 @@ export async function collectRelationalTemperatureScience({region='nyc',now=Date
  // A bounded 98-day archive ending at today's UTC midnight; no current-day truth.
  const end=Math.floor(now/DAY)*DAY,start=end-98*DAY,stations=RELATIONAL_REGIONS[region];
  const {url,text,availableAt}=await readIemTemperatureCsv({stations,start,end,fetchImpl,timeoutMs:50000,maxBytes:2*1024*1024});
- const sourceId=createHash('sha256').update(text).digest('hex'),source={url,availableAt,sha256:sourceId,bytes:Buffer.byteLength(text),observationFrom:iso(start),observationBefore:iso(end),archiveQuality:'IEM processed routine METAR; as-is collection, limited quality control; not an independent second sensor'};
+ const sourceId=sha256Hex(text),source={url,availableAt,sha256:sourceId,bytes:Buffer.byteLength(text),observationFrom:iso(start),observationBefore:iso(end),archiveQuality:'IEM processed routine METAR; as-is collection, limited quality control; not an independent second sensor'};
  const reading=parseRelationalTemperatureCsv(text,{stations,availableAt,sourceId});
  return {at:availableAt,kind:'relational-temperature-science-v1',region,stations:stations.map(s=>'K'+s),source,rawSource:text,experiment:replayRelationalTemperature(reading,{stations}),orderEffect:false};
 }

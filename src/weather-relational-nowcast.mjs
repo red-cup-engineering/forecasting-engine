@@ -1,12 +1,13 @@
 /** Prospective, receipt-clocked routine-report forecasts from frozen relational learners.
  * Physical verification only. This does not project to an exact venue settlement. */
-import {createHash,randomUUID} from 'node:crypto';
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
+import { randomUUID } from 'node:crypto';
 import {readFile,mkdir,writeFile,link,rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import {readIemTemperatureCsv} from './iem-temperature-source.mjs';
 import {collectWeatherStrategyResearch,WEATHER_LEARNER_SPECS} from './weather-strategy-research.mjs';
 import {parseRelationalTemperatureCsv,relationalTemperaturePanel,relationalTemperatureFeatures,relationalIrregularTemperatureFeatures,fitRelationalTemperatureForIssuance,predictRelationalTemperature,RELATIONAL_REGIONS,regionalThermalTransition} from './weather-relational-temperature.mjs';
-const HOUR=3600000,DAY=24*HOUR,iso=t=>new Date(t).toISOString(),hash=v=>createHash('sha256').update(typeof v==='string'?v:JSON.stringify(v)).digest('hex');
+const HOUR=3600000,DAY=24*HOUR,iso=t=>new Date(t).toISOString(),hash=v=>sha256Hex(typeof v==='string'?v:JSON.stringify(v));
 const mean=a=>a.reduce((s,v)=>s+v,0)/a.length;
 const conflictBin=(reading,t)=>reading.conflicts.some(c=>c.witnesses.some(r=>{const at=Date.parse(r.observedAt);return Math.ceil(at/HOUR)*HOUR===t&&t-at<=20*60000;}));
 export function prospectiveRelationalForecasts(training,reading,{region,now=Date.now()}={}){

@@ -1,9 +1,9 @@
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import {weatherIndexBinding} from './weather-index.mjs';
-import { createHash } from 'node:crypto';
 import { temperatureSeries } from './temperature-market-model.mjs';
 import { eventDate } from './market-outcome.mjs';
 import { rainCityCode, rainCity } from './rain-market-model.mjs';
-export const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+export const digest = value => sha256Hex(JSON.stringify(value));
 export async function mapLimit(rows, limit, fn) {
   const out = new Array(rows.length); let next = 0;
   await Promise.all(Array.from({length: Math.min(limit, rows.length)}, async () => {

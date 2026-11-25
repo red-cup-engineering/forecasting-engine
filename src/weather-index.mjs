@@ -1,5 +1,5 @@
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import {ecmwfStationDistributions} from './weather-ecmwf-ensemble.mjs';
-import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {innovationWeight} from './weather-index-innovation.mjs';
 import {rateEnvelopeModel} from './weather-index-rate-envelope.mjs';
@@ -33,7 +33,7 @@ async function indexMethodology(city,fetchImpl){
  const url=`https://assets.kalshi.com/contract_terms/${INDEX_CITIES[city].terms}.pdf`,acquired=await acquireHttpResponse(url,{fetchImpl,timeoutMs:15000});
  const bytes=Buffer.from(await readBody({body:acquired.response.body,headers:acquired.response.headers,signal:acquired.signal},{maxBytes:2*1024*1024,decodeContentEncoding:false}));if(bytes.subarray(0,5).toString()!=='%PDF-')throw new Error('bounded certified PDF required');
  const availableAt=new Date().toISOString(),job=execute('pdftotext',['-layout','-','-'],{timeout:10000,maxBuffer:512*1024});job.child.stdin.end(bytes);const {stdout}=await job;
- return {url,responseUrl:acquired.url,receivedAt:acquired.receivedAt,attempts:acquired.attempts,rateLimits:acquired.rateLimits,availableAt,decodedAt:new Date().toISOString(),sha256:createHash('sha256').update(bytes).digest('hex'),bytes:bytes.length,rawPdfBase64:bytes.toString('base64'),rawText:stdout,...parseIndexMethodology(stdout,city)};
+ return {url,responseUrl:acquired.url,receivedAt:acquired.receivedAt,attempts:acquired.attempts,rateLimits:acquired.rateLimits,availableAt,decodedAt:new Date().toISOString(),sha256:sha256Hex(bytes),bytes:bytes.length,rawPdfBase64:bytes.toString('base64'),rawText:stdout,...parseIndexMethodology(stdout,city)};
 }
 
 const months={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
@@ -63,7 +63,7 @@ function receivedIndexMethodology(document,city,availableAt){
  if(parsed.configurationVersion!==document.configurationVersion||parsed.quorum.members!==document.quorum.members||parsed.quorum.weight!==document.quorum.weight||parsed.precisionF!==document.precisionF||parsed.roundingTieRule!==document.roundingTieRule)return false;
  // The same city and text share parsed terms, while claims and clocks are checked for every call.
  if(sameText&&previous.rawPdfBase64===document.rawPdfBase64&&previous.sha256===document.sha256&&previous.bytes===document.bytes)return previous.valid;
- const bytes=Buffer.from(document.rawPdfBase64,'base64'),valid=bytes.length===document.bytes&&bytes.subarray(0,5).toString()==='%PDF-'&&bytes.toString('base64')===document.rawPdfBase64&&createHash('sha256').update(bytes).digest('hex')===document.sha256;
+ const bytes=Buffer.from(document.rawPdfBase64,'base64'),valid=bytes.length===document.bytes&&bytes.subarray(0,5).toString()==='%PDF-'&&bytes.toString('base64')===document.rawPdfBase64&&sha256Hex(bytes)===document.sha256;
  receivedMethodologyBodies.set(document,{city,rawPdfBase64:document.rawPdfBase64,rawText:document.rawText,sha256:document.sha256,bytes:document.bytes,parsed,valid});return valid;
 }
 /** Bind eligibility to the actual received city law, rather than its URL alone.
@@ -77,8 +77,8 @@ export function weatherIndexContractScope(contract,evidence,now){
   return {...contract,indexMethodologyBlocker,blocker:independentBlocker??indexMethodologyBlocker};
  }
  const document=packet.methodology,law={city:b.city,methodologyBodyNI:'ni:///sha-256;'+Buffer.from(document.sha256,'hex').toString('base64url'),methodologySha256:document.sha256,configurationVersion:configuration.config_version,cityReferenceC:configuration.city_reference_c,stations:configuration.stations.map(s=>({stationId:s.station_id,weight:s.weight,offsetC:s.offset_c})).sort((a,b)=>a.stationId.localeCompare(b.stationId)),quorum:{members:document.quorum.members,weight:document.quorum.weight},precisionF:document.precisionF,roundingTieRule:document.roundingTieRule};
- const lawId=createHash('sha256').update(JSON.stringify(law)).digest('hex'),baseRuleKey=contract.indexLaw?.baseRuleKey??contract.ruleKey;
- const ruleKey=createHash('sha256').update(JSON.stringify({baseRuleKey,indexLaw:lawId})).digest('hex');
+ const lawId=sha256Hex(JSON.stringify(law)),baseRuleKey=contract.indexLaw?.baseRuleKey??contract.ruleKey;
+ const ruleKey=sha256Hex(JSON.stringify({baseRuleKey,indexLaw:lawId}));
  return {...contract,ruleKey,indexMethodologyBlocker:null,blocker:contract.blocker===contract.indexMethodologyBlocker?null:contract.blocker??null,indexLaw:{id:lawId,baseRuleKey,...law}};
 }
 export function indexConfiguration(packet,city,eventTime,availableAt){
@@ -124,7 +124,7 @@ export async function collectWeatherIndexEvidence(cities,{now=Date.now(),fetchIm
   for(const [key,url] of [['calibrations',packet.calibrationSource],['index',packet.indexSource]]){
    try{
     const acquired=await acquireHttpResponse(url,{fetchImpl,timeoutMs:15000}),bytes=Buffer.from(await readBody({body:acquired.response.body,headers:acquired.response.headers,signal:acquired.signal},{maxBytes:JSON_RESOURCE_ENVELOPE.maxSourceBytes,decodeContentEncoding:false})),availableAt=new Date().toISOString();
-    packet.receipts[key]={url,responseUrl:acquired.url,receivedAt:acquired.receivedAt,availableAt,decodedAt:null,sha256:createHash('sha256').update(bytes).digest('hex'),bytes:bytes.length,rawJsonBase64:bytes.toString('base64'),attempts:acquired.attempts,rateLimits:acquired.rateLimits};
+    packet.receipts[key]={url,responseUrl:acquired.url,receivedAt:acquired.receivedAt,availableAt,decodedAt:null,sha256:sha256Hex(bytes),bytes:bytes.length,rawJsonBase64:bytes.toString('base64'),attempts:acquired.attempts,rateLimits:acquired.rateLimits};
     packet[key]=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));packet.receipts[key].decodedAt=new Date().toISOString();
    }
    catch(e){errors.push({source:'Kalshi-weather-index',city,kind:key,error:e.message});}

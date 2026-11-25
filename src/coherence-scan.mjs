@@ -1,10 +1,10 @@
+import { protocolDigestHex } from "@red-cup-engineering/cryptographic-computer-data-engineering-services-section/hash";
 import { sleep } from "@red-cup-engineering/parse-javascript-argv-service";
 /**
  * Live coherence scan over Kalshi's open universe: public market data only, no order,
  * no signature. Fetches events (with nested markets) and series metadata, builds the
  * constraint families, assesses each, and re-solves every Dutch book with order-book depth.
  */
-import { createHash } from 'node:crypto';
 import { assessFamily } from './coherence.mjs';
 import { polymarketDepth } from './coherence-polymarket.mjs';
 import {
@@ -157,7 +157,7 @@ export async function redoWithDepth(family, assessed, { fetchImpl = fetch, throt
   return { family: deep, assessed: assessFamily(deep) };
 }
 
-export const signatureOf = (portfolio) => createHash('sha1').update(JSON.stringify(portfolio.legs.map((l) => [l.ticker, l.side, l.price]))).digest('hex').slice(0, 12);
+export const signatureOf = (portfolio) => protocolDigestHex("sha1", JSON.stringify(portfolio.legs.map((l) => [l.ticker, l.side, l.price]))).slice(0, 12);
 
 /** Settlement-rule risk flags for a family. */
 export function riskFlags(family) {

@@ -1,15 +1,15 @@
+import { sha256Hex } from "@red-cup-engineering/semiotic-content-address-system";
 import {adaptiveTemperaturePool} from './weather-family-learning.mjs';
 import {ecmwfStationDistributions} from './weather-ecmwf-ensemble.mjs';
 import {relationalTemperaturePanel,RELATIONAL_REGIONS} from './weather-relational-temperature.mjs';
 import {INDEX_CITIES,indexDistributions,canonicalIndexPoints,stationTemperatureDistribution} from './weather-index.mjs';
 /** Prequential station verification and regularized local postprocessing, independent of markets. */
 import {join} from 'node:path';
-import {createHash} from 'node:crypto';
 import {weatherReadPage} from './weather-read-page.mjs';
 import {readWeatherSourceRecord} from './weather-source-record.mjs';
 import {openTree,readTree,saveTree,importLegacyFile} from './weather-state-tree.mjs';
 import {makeTemperaturePool,postprocessTemperature,temperatureDiagnostics,temperatureDistributionCrps} from './weather-ensemble.mjs';
-const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
+const hash=x=>sha256Hex(JSON.stringify(x));
 const key=r=>`${r.station}/${r.model}/${r.horizon}`;
 const cohort=h=>h<=3?'0-3h':h<=6?'3-6h':h<=12?'6-12h':h<=24?'12-24h':'24-48h';
 /** Backwards-compatible single-Student-t scoring, using the same quadrature as ensembles. */
